@@ -1,0 +1,17 @@
+{
+  "name": "anomalous/msc-scheduled-visibility",
+  "description": "Schedule posts and pages to appear and disappear between specific dates and times without publishing or deleting.",
+  "type": "wordpress-plugin",
+  "require-dev": {
+    "dealerdirect/phpcodesniffer-composer-installer": "^1.1",
+    "squizlabs/php_codesniffer": "^3.10",
+    "phpcsstandards/phpcsextra": "^1.2",
+    "phpcsstandards/phpcsutils": "^1.1",
+    "wp-coding-standards/wpcs": "^3.1"
+  },
+  "scripts": {
+    "lint": "phpcs .",
+    "lint-fix": "phpcbf .",
+    "i18n:pot": "wp i18n make-pot . languages/msc-scheduled-visibility.pot --domain=msc-scheduled-visibility --exclude=node_modules,vendor,.git,tests"
+  }
+}

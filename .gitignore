@@ -1,0 +1,14 @@
+# Dependencies — reinstall with `composer install` / `npm install`.
+node_modules
+vendor
+
+# Test / tooling artifacts
+.phpunit.result.cache
+coverage/
+
+# OS noise
+.DS_Store
+._*
+
+# Build output is deliberately NOT ignored: scripts/package.sh excludes /src/ from
+# the distribution zip, so the compiled editor bundle in /build/ has to be committed.

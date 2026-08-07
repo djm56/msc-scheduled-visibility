@@ -1,0 +1,147 @@
+/* Settings page */
+.msc-admin-wrap {
+	max-width: 1120px;
+}
+
+.msc-admin-card {
+	margin-top: 16px;
+}
+
+/* Metabox */
+.mscsv-metabox input[type="date"],
+.mscsv-metabox input[type="time"] {
+	width: auto;
+	margin-right: 4px;
+}
+
+.mscsv-metabox .mscsv-fields p {
+	margin: 8px 0;
+}
+
+.mscsv-current-status {
+	margin-top: 12px;
+	padding-top: 8px;
+	border-top: 1px solid #dcdcde;
+}
+
+/* Status badges */
+.mscsv-badge {
+	display: inline-block;
+	padding: 2px 8px;
+	border-radius: 3px;
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 1.4;
+	color: #fff;
+}
+
+.mscsv-badge--visible {
+	background: #00a32a;
+}
+
+.mscsv-badge--scheduled {
+	background: #2271b1;
+}
+
+.mscsv-badge--hidden {
+	background: #d63638;
+}
+
+.mscsv-badge--expired {
+	background: #787c82;
+}
+
+.mscsv-badge--recurring {
+	background: #8c5e00;
+}
+
+.mscsv-badge--roles {
+	background: #3858e9;
+}
+
+.mscsv-badges {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: 4px;
+}
+
+/* Tabs */
+.mscsv-nav-tabs {
+	margin-bottom: 0;
+}
+
+/* Extended metabox sections */
+.mscsv-extra-section {
+	margin-top: 8px;
+}
+
+.mscsv-extra-section hr {
+	border: none;
+	border-top: 1px solid #dcdcde;
+	margin: 12px 0;
+}
+
+.mscsv-extra-section select,
+.mscsv-extra-section input[type="number"] {
+	vertical-align: middle;
+}
+
+.mscsv-extra-section input[type="time"],
+.mscsv-extra-section input[type="date"] {
+	width: auto;
+	margin-right: 4px;
+}
+
+/* Preview controls */
+.mscsv-preview-section input[type="datetime-local"],
+.mscsv-preview-section select {
+	width: 100%;
+	max-width: 100%;
+}
+
+/* Quick Edit / Bulk Edit */
+.mscsv-quick-edit .mscsv-quick-edit__fields,
+.mscsv-bulk-edit .mscsv-bulk-edit__fields {
+	margin-top: 6px;
+}
+
+.mscsv-quick-edit label,
+.mscsv-bulk-edit label {
+	display: block;
+	margin-bottom: 6px;
+}
+
+.mscsv-quick-edit input[type="date"],
+.mscsv-quick-edit input[type="time"],
+.mscsv-bulk-edit input[type="date"],
+.mscsv-bulk-edit input[type="time"] {
+	width: auto;
+	vertical-align: middle;
+}
+
+.mscsv-quick-edit__toggle .checkbox-title {
+	font-style: normal;
+}
+
+/* Hide the inline data payload written into each list-table row. */
+.mscsv-inline-data {
+	display: none;
+}
+
+/* History + diagnostics tables */
+.mscsv-history-table td,
+.mscsv-diagnostics td {
+	vertical-align: middle;
+}
+
+.mscsv-endpoint-list {
+	margin: 8px 0 0;
+}
+
+.mscsv-endpoint-list li {
+	margin: 0 0 4px;
+}
+
+.mscsv-endpoint-list code {
+	white-space: pre;
+}
