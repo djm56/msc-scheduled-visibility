@@ -15,7 +15,7 @@ Schedule posts, pages and products to appear and disappear between specific date
 - REST API under `mscsv/v1`
 - Dashboard widget and admin column for schedule status
 
-## How visibility is decided
+## How visibility is decided always
 
 Two mechanisms work together:
 
