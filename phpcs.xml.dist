@@ -24,11 +24,13 @@
   </rule>
 
   <!--
-    The visibility check runs every 5 minutes by design — that is the documented
-    granularity of the feature, and the frontend also resolves schedules live.
+    Without the text_domain property the I18n sniff accepts any domain, so a typo'd
+    or copy-pasted domain would pass CI silently.
   -->
-  <rule ref="WordPress.WP.CronInterval">
-    <severity>0</severity>
+  <rule ref="WordPress.WP.I18n">
+    <properties>
+      <property name="text_domain" type="array" value="msc-scheduled-visibility"/>
+    </properties>
   </rule>
 
   <arg name="extensions" value="php,css"/>

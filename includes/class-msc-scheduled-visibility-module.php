@@ -26,6 +26,35 @@ class Module {
 	const CRON_BATCH_SIZE = 200;
 
 	/**
+	 * Name of the custom cron recurrence.
+	 *
+	 * Renamed from `mscsv_five_minutes`; ensure_cron() migrates events still pointing
+	 * at the old name.
+	 */
+	const CRON_RECURRENCE = 'mscsv_fifteen_minutes';
+
+	/**
+	 * Private taxonomy mirroring `_mscsv_status`.
+	 *
+	 * The status meta stays the source of truth, but listing queries filter on this
+	 * taxonomy instead: term relationships are indexed, where a postmeta lookup has
+	 * to join and scan `wp_postmeta` on every shop page, archive and cron sweep.
+	 */
+	const STATUS_TAXONOMY = 'mscsv_status';
+
+	/**
+	 * Every status a scheduled post can hold.
+	 */
+	const STATUSES = array( 'visible', 'scheduled', 'hidden', 'expired' );
+
+	/**
+	 * How many scheduled posts the dashboard widget examines when picking the
+	 * soonest transitions. Bounded so the widget cost does not grow with the
+	 * number of scheduled posts.
+	 */
+	const DASHBOARD_SCAN_LIMIT = 100;
+
+	/**
 	 * Main plugin instance.
 	 *
 	 * @var Plugin
@@ -40,6 +69,19 @@ class Module {
 	private $visibility_cache = array();
 
 	/**
+	 * Per-request cache of scheduled-out post IDs. Null until first resolved.
+	 *
+	 * @var array<int,int>|null
+	 */
+	/**
+	 * True while the plugin is writing scheduling meta itself, so the safety-net
+	 * meta hook stands aside and lets the write path own the term.
+	 *
+	 * @var bool
+	 */
+	private $writing_own_meta = false;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Plugin $plugin Plugin instance.
@@ -51,9 +93,22 @@ class Module {
 		// that an already-scheduled event keeps a valid recurrence.
 		add_filter( 'cron_schedules', array( $this, 'register_cron_schedule' ) );
 
+		// The status taxonomy is registered whatever the module state: terms written
+		// while it was on must stay readable so they can be cleaned up or re-read
+		// after it is switched back on. Priority 0 puts it in place before any
+		// `init`-time query can run against it.
+		add_action( 'init', array( $this, 'register_status_taxonomy' ), 0 );
+
 		if ( ! $this->is_enabled() ) {
 			return;
 		}
+
+		// The cron sweep finds scheduled posts by term, so a schedule written straight
+		// to post meta — an import, WP-CLI, another plugin — would otherwise never be
+		// swept. Mirror the term whenever the meta itself moves.
+		add_action( 'added_post_meta', array( $this, 'sync_term_on_meta_write' ), 10, 3 );
+		add_action( 'updated_post_meta', array( $this, 'sync_term_on_meta_write' ), 10, 3 );
+		add_action( 'deleted_post_meta', array( $this, 'sync_term_on_meta_write' ), 10, 3 );
 
 		// Admin hooks.
 		add_action( 'add_meta_boxes', array( $this, 'register_metabox' ) );
@@ -71,12 +126,15 @@ class Module {
 		// Cron callback.
 		add_action( 'mscsv_cron_check', array( $this, 'cron_check_visibility' ) );
 
-		// Frontend visibility filtering.
-		if ( ! is_admin() ) {
-			add_action( 'pre_get_posts', array( $this, 'filter_frontend_query' ) );
+		/*
+		 * Frontend visibility filtering, done entirely on results rather than by
+		 * narrowing the query. Excluding IDs in SQL would keep result counts exact,
+		 * but recurring windows and per-visitor role rules cannot be expressed as a
+		 * query clause anyway, so a results pass was always going to run — this way
+		 * there is one filtering path instead of two that have to agree.
+		 */
+		if ( ! is_admin() || wp_doing_ajax() ) {
 			add_filter( 'posts_results', array( $this, 'filter_posts_results' ), 10, 2 );
-			// Second pass: the meta_query above can only test the cron-written status,
-			// so recurring windows and per-user role rules are applied here.
 			add_filter( 'the_posts', array( $this, 'filter_the_posts' ), 10, 2 );
 		}
 
@@ -95,7 +153,7 @@ class Module {
 
 		// Block-level content filtering. Core attaches do_blocks() to the_content at
 		// priority 9, so this must run before that to still see block delimiters.
-		if ( ! is_admin() && $this->plugin->get_option( 'block_scheduling_enabled', 1 ) ) {
+		if ( ( ! is_admin() || wp_doing_ajax() ) && $this->plugin->get_option( 'block_scheduling_enabled', 1 ) ) {
 			add_filter( 'the_content', array( $this, 'filter_block_visibility' ), 8 );
 		}
 
@@ -118,6 +176,168 @@ class Module {
 		$post_types = (array) $this->plugin->get_option( 'post_types', array( 'post', 'page' ) );
 
 		return array_values( array_filter( array_map( 'strval', $post_types ) ) );
+	}
+
+	// =========================================================================
+	// Status taxonomy
+	// =========================================================================
+
+	/**
+	 * Register the private status taxonomy.
+	 *
+	 * @return void
+	 */
+	public function register_status_taxonomy() {
+		$object_types = $this->get_post_types();
+
+		// Products are filtered through the same exclusion even when `product` is not
+		// a selected post type, so the taxonomy has to cover them too.
+		if ( ! in_array( 'product', $object_types, true ) ) {
+			$object_types[] = 'product';
+		}
+
+		register_taxonomy(
+			self::STATUS_TAXONOMY,
+			$object_types,
+			array(
+				// Not translated: the taxonomy has no UI, so this label is never shown.
+				'label'              => 'Scheduled Visibility Status',
+				'public'             => false,
+				'publicly_queryable' => false,
+				'show_ui'            => false,
+				'show_in_menu'       => false,
+				'show_in_nav_menus'  => false,
+				'show_in_rest'       => false,
+				'show_admin_column'  => false,
+				'show_tagcloud'      => false,
+				'hierarchical'       => false,
+				'query_var'          => false,
+				'rewrite'            => false,
+			)
+		);
+	}
+
+	/**
+	 * Resolve status slugs to existing term IDs.
+	 *
+	 * Slugs with no term yet are dropped rather than created: a term that does not
+	 * exist has no posts, so leaving it out of a clause is always correct.
+	 *
+	 * @param array<int,string> $statuses Status slugs.
+	 * @return array<int,int> Term IDs.
+	 */
+	public function status_term_ids( $statuses ) {
+		if ( ! taxonomy_exists( self::STATUS_TAXONOMY ) ) {
+			return array();
+		}
+
+		$term_ids = array();
+
+		foreach ( (array) $statuses as $status ) {
+			$term = get_term_by( 'slug', $status, self::STATUS_TAXONOMY );
+
+			if ( $term instanceof \WP_Term ) {
+				$term_ids[] = (int) $term->term_id;
+			}
+		}
+
+		return $term_ids;
+	}
+
+	/**
+	 * Post IDs carrying any of the given statuses.
+	 *
+	 * Read straight out of the term relationships rather than through a tax_query on
+	 * the consuming query: one indexed lookup here, reused across every caller in
+	 * the request, instead of a taxonomy subquery bolted onto each of them.
+	 *
+	 * @param array<int,string> $statuses Status slugs.
+	 * @return array<int,int> Post IDs.
+	 */
+	private function post_ids_with_statuses( $statuses ) {
+		$term_ids = $this->status_term_ids( $statuses );
+
+		if ( empty( $term_ids ) ) {
+			return array();
+		}
+
+		$post_ids = get_objects_in_term( $term_ids, self::STATUS_TAXONOMY );
+
+		if ( is_wp_error( $post_ids ) ) {
+			return array();
+		}
+
+		return array_values( array_unique( array_map( 'intval', $post_ids ) ) );
+	}
+
+	/**
+	 * Post IDs that have scheduling enabled.
+	 *
+	 * @param array<int,string>|null $statuses Statuses, or null for all of them.
+	 * @return array<int,int> Post IDs.
+	 */
+	public function scheduled_post_ids( $statuses = null ) {
+		return $this->post_ids_with_statuses( null === $statuses ? self::STATUSES : $statuses );
+	}
+
+	/**
+	 * Keep the status term in step with direct writes to the scheduling meta.
+	 *
+	 * Only the term is touched — no status transition hooks fire and nothing is
+	 * logged, because this runs on writes the plugin did not make and cannot
+	 * attribute. The next cron sweep, which can now see the post, does the real
+	 * refresh and reports the transition properly.
+	 *
+	 * @param int|array<int,int> $meta_id  Meta ID(s), unused.
+	 * @param int                $post_id  Post ID.
+	 * @param string             $meta_key Meta key that changed.
+	 * @return void
+	 */
+	public function sync_term_on_meta_write( $meta_id, $post_id, $meta_key ) {
+		unset( $meta_id );
+
+		if ( $this->writing_own_meta ) {
+			return;
+		}
+
+		if ( '_mscsv_enabled' !== $meta_key && '_mscsv_status' !== $meta_key ) {
+			return;
+		}
+
+		if ( ! (int) get_post_meta( $post_id, '_mscsv_enabled', true ) ) {
+			$this->sync_status_term( $post_id, '' );
+			return;
+		}
+
+		$status = (string) get_post_meta( $post_id, '_mscsv_status', true );
+
+		// Enabled but never evaluated: compute a status so the post becomes visible to
+		// the sweep. compute_post_status() only reads, so this stays side-effect free.
+		if ( '' === $status ) {
+			$status = $this->compute_post_status( $post_id );
+		}
+
+		$this->sync_status_term( $post_id, $status );
+	}
+
+	/**
+	 * Mirror a post's status onto the taxonomy.
+	 *
+	 * @param int    $post_id Post ID.
+	 * @param string $status  Status slug, or an empty string to clear.
+	 * @return void
+	 */
+	private function sync_status_term( $post_id, $status ) {
+		if ( ! taxonomy_exists( self::STATUS_TAXONOMY ) ) {
+			return;
+		}
+
+		if ( '' === $status || ! in_array( $status, self::STATUSES, true ) ) {
+			wp_set_object_terms( $post_id, array(), self::STATUS_TAXONOMY );
+			return;
+		}
+
+		wp_set_object_terms( $post_id, array( $status ), self::STATUS_TAXONOMY );
 	}
 
 	// =========================================================================
@@ -366,10 +586,10 @@ class Module {
 			$post_id,
 			array(
 				'enabled'    => isset( $_POST['mscsv_enabled'] ),
-				'start_date' => isset( $_POST['mscsv_start_date'] ) ? wp_unslash( $_POST['mscsv_start_date'] ) : '',
-				'start_time' => isset( $_POST['mscsv_start_time'] ) ? wp_unslash( $_POST['mscsv_start_time'] ) : '',
-				'end_date'   => isset( $_POST['mscsv_end_date'] ) ? wp_unslash( $_POST['mscsv_end_date'] ) : '',
-				'end_time'   => isset( $_POST['mscsv_end_time'] ) ? wp_unslash( $_POST['mscsv_end_time'] ) : '',
+				'start_date' => isset( $_POST['mscsv_start_date'] ) ? sanitize_text_field( wp_unslash( $_POST['mscsv_start_date'] ) ) : '',
+				'start_time' => isset( $_POST['mscsv_start_time'] ) ? sanitize_text_field( wp_unslash( $_POST['mscsv_start_time'] ) ) : '',
+				'end_date'   => isset( $_POST['mscsv_end_date'] ) ? sanitize_text_field( wp_unslash( $_POST['mscsv_end_date'] ) ) : '',
+				'end_time'   => isset( $_POST['mscsv_end_time'] ) ? sanitize_text_field( wp_unslash( $_POST['mscsv_end_time'] ) ) : '',
 			)
 		);
 	}
@@ -397,13 +617,13 @@ class Module {
 				$post_id,
 				array(
 					'enabled'      => isset( $_POST['mscsv_recurring_enabled'] ),
-					'pattern'      => isset( $_POST['mscsv_recurring_pattern'] ) ? wp_unslash( $_POST['mscsv_recurring_pattern'] ) : 'daily',
-					'days'         => isset( $_POST['mscsv_recurring_days'] ) ? (array) wp_unslash( $_POST['mscsv_recurring_days'] ) : array(),
-					'day_of_month' => isset( $_POST['mscsv_recurring_day_of_month'] ) ? wp_unslash( $_POST['mscsv_recurring_day_of_month'] ) : 0,
-					'start_time'   => isset( $_POST['mscsv_recurring_start_time'] ) ? wp_unslash( $_POST['mscsv_recurring_start_time'] ) : '',
-					'end_time'     => isset( $_POST['mscsv_recurring_end_time'] ) ? wp_unslash( $_POST['mscsv_recurring_end_time'] ) : '',
-					'valid_from'   => isset( $_POST['mscsv_recurring_valid_from'] ) ? wp_unslash( $_POST['mscsv_recurring_valid_from'] ) : '',
-					'valid_until'  => isset( $_POST['mscsv_recurring_valid_until'] ) ? wp_unslash( $_POST['mscsv_recurring_valid_until'] ) : '',
+					'pattern'      => isset( $_POST['mscsv_recurring_pattern'] ) ? sanitize_key( wp_unslash( $_POST['mscsv_recurring_pattern'] ) ) : 'daily',
+					'days'         => isset( $_POST['mscsv_recurring_days'] ) ? array_map( 'absint', (array) wp_unslash( $_POST['mscsv_recurring_days'] ) ) : array(),
+					'day_of_month' => isset( $_POST['mscsv_recurring_day_of_month'] ) ? absint( wp_unslash( $_POST['mscsv_recurring_day_of_month'] ) ) : 0,
+					'start_time'   => isset( $_POST['mscsv_recurring_start_time'] ) ? sanitize_text_field( wp_unslash( $_POST['mscsv_recurring_start_time'] ) ) : '',
+					'end_time'     => isset( $_POST['mscsv_recurring_end_time'] ) ? sanitize_text_field( wp_unslash( $_POST['mscsv_recurring_end_time'] ) ) : '',
+					'valid_from'   => isset( $_POST['mscsv_recurring_valid_from'] ) ? sanitize_text_field( wp_unslash( $_POST['mscsv_recurring_valid_from'] ) ) : '',
+					'valid_until'  => isset( $_POST['mscsv_recurring_valid_until'] ) ? sanitize_text_field( wp_unslash( $_POST['mscsv_recurring_valid_until'] ) ) : '',
 				)
 			);
 		}
@@ -413,7 +633,7 @@ class Module {
 				$post_id,
 				array(
 					'enabled'    => isset( $_POST['mscsv_roles_enabled'] ),
-					'roles'      => isset( $_POST['mscsv_roles'] ) ? (array) wp_unslash( $_POST['mscsv_roles'] ) : array(),
+					'roles'      => isset( $_POST['mscsv_roles'] ) ? array_map( 'sanitize_key', (array) wp_unslash( $_POST['mscsv_roles'] ) ) : array(),
 					'logged_out' => isset( $_POST['mscsv_roles_logged_out'] ),
 				)
 			);
@@ -465,20 +685,30 @@ class Module {
 	 */
 	public function set_base_schedule( $post_id, $data ) {
 		$enabled = ! empty( $data['enabled'] ) ? 1 : 0;
-		update_post_meta( $post_id, '_mscsv_enabled', $enabled );
 
-		if ( ! $enabled ) {
-			foreach ( array( 'start_date', 'start_time', 'end_date', 'end_time', 'status' ) as $key ) {
-				delete_post_meta( $post_id, '_mscsv_' . $key );
+		// This method owns the term for the writes below, so the meta safety net must
+		// not step in and set one from half-written dates.
+		$this->writing_own_meta = true;
+
+		try {
+			update_post_meta( $post_id, '_mscsv_enabled', $enabled );
+
+			if ( ! $enabled ) {
+				foreach ( array( 'start_date', 'start_time', 'end_date', 'end_time', 'status' ) as $key ) {
+					delete_post_meta( $post_id, '_mscsv_' . $key );
+				}
+				$this->sync_status_term( $post_id, '' );
+				$this->flush_visibility_cache();
+				return;
 			}
-			$this->flush_visibility_cache();
-			return;
-		}
 
-		update_post_meta( $post_id, '_mscsv_start_date', $this->sanitize_date( isset( $data['start_date'] ) ? $data['start_date'] : '' ) );
-		update_post_meta( $post_id, '_mscsv_start_time', $this->sanitize_time( isset( $data['start_time'] ) ? $data['start_time'] : '' ) );
-		update_post_meta( $post_id, '_mscsv_end_date', $this->sanitize_date( isset( $data['end_date'] ) ? $data['end_date'] : '' ) );
-		update_post_meta( $post_id, '_mscsv_end_time', $this->sanitize_time( isset( $data['end_time'] ) ? $data['end_time'] : '' ) );
+			update_post_meta( $post_id, '_mscsv_start_date', $this->sanitize_date( isset( $data['start_date'] ) ? $data['start_date'] : '' ) );
+			update_post_meta( $post_id, '_mscsv_start_time', $this->sanitize_time( isset( $data['start_time'] ) ? $data['start_time'] : '' ) );
+			update_post_meta( $post_id, '_mscsv_end_date', $this->sanitize_date( isset( $data['end_date'] ) ? $data['end_date'] : '' ) );
+			update_post_meta( $post_id, '_mscsv_end_time', $this->sanitize_time( isset( $data['end_time'] ) ? $data['end_time'] : '' ) );
+		} finally {
+			$this->writing_own_meta = false;
+		}
 
 		$this->refresh_status( $post_id );
 	}
@@ -576,13 +806,37 @@ class Module {
 	public function refresh_status( $post_id ) {
 		$this->flush_visibility_cache();
 
+		// This method is the authority on the status term, so the meta safety net
+		// stays out of the way of its own writes.
+		$this->writing_own_meta = true;
+
+		try {
+			return $this->refresh_status_unguarded( $post_id );
+		} finally {
+			$this->writing_own_meta = false;
+		}
+	}
+
+	/**
+	 * Body of refresh_status(), run with the meta safety net suppressed.
+	 *
+	 * @param int $post_id Post ID.
+	 * @return string The status now stored.
+	 */
+	private function refresh_status_unguarded( $post_id ) {
 		if ( ! (int) get_post_meta( $post_id, '_mscsv_enabled', true ) ) {
 			delete_post_meta( $post_id, '_mscsv_status' );
+			$this->sync_status_term( $post_id, '' );
 			return 'visible';
 		}
 
 		$old_status = (string) get_post_meta( $post_id, '_mscsv_status', true );
 		$new_status = $this->compute_post_status( $post_id );
+
+		// Mirrored on every pass rather than only on change, so a term lost to a
+		// half-finished write or an interrupted backfill repairs itself on the next
+		// cron sweep instead of leaving the post invisible to listing queries.
+		$this->sync_status_term( $post_id, $new_status );
 
 		if ( $old_status === $new_status ) {
 			return $new_status;
@@ -664,12 +918,20 @@ class Module {
 				$pt,
 				'_mscsv_block_schedules',
 				array(
-					'show_in_rest'  => true,
-					'single'        => true,
-					'type'          => 'string',
-					'auth_callback' => function () {
-						return current_user_can( 'edit_posts' );
+					'show_in_rest'      => true,
+					'single'            => true,
+					'type'              => 'string',
+					// Authorize against the post being written, not a blanket
+					// site-wide capability. Core's map_meta_cap() and the REST posts
+					// controller both gate this too, so this is defence in depth
+					// rather than the only check — but a per-object write deserves a
+					// per-object test.
+					'auth_callback'     => function ( $allowed, $meta_key, $object_id ) {
+						return current_user_can( 'edit_post', $object_id );
 					},
+					// Registered as a REST-writable string that is later json_decode'd,
+					// so constrain it to something that actually decodes to a structure.
+					'sanitize_callback' => array( $this, 'sanitize_block_schedules_meta' ),
 				)
 			);
 		}
@@ -681,13 +943,11 @@ class Module {
 	 * @return void
 	 */
 	public function enqueue_block_editor_assets() {
-		$asset_file = MSCSV_PLUGIN_DIR . 'build/index.asset.php';
-
-		if ( ! file_exists( $asset_file ) ) {
+		if ( ! file_exists( MSCSV_PLUGIN_DIR . 'build/index.asset.php' ) ) {
 			return;
 		}
 
-		$asset = include $asset_file;
+		$asset = include MSCSV_PLUGIN_DIR . 'build/index.asset.php';
 
 		wp_enqueue_script(
 			'mscsv-block-scheduling',
@@ -695,6 +955,15 @@ class Module {
 			$asset['dependencies'],
 			$asset['version'],
 			true
+		);
+
+		// The sidebar's ~15 __() calls are extracted into the POT but would render
+		// untranslated in every locale without this: JS translations are loaded from
+		// per-script JSON, not the PHP text domain.
+		wp_set_script_translations(
+			'mscsv-block-scheduling',
+			'msc-scheduled-visibility',
+			MSCSV_PLUGIN_DIR . 'languages'
 		);
 	}
 
@@ -834,53 +1103,76 @@ class Module {
 			return;
 		}
 
-		$posts = get_posts(
-			array(
-				'post_type'      => $post_types,
-				'post_status'    => 'publish',
-				'posts_per_page' => 10,
-				// Soonest start date first, so the widget leads with what changes next.
-				'orderby'        => array(
-					'start_date_clause' => 'ASC',
-					'title'             => 'ASC',
-				),
-				'meta_query'     => array(
-					array(
-						'key'   => '_mscsv_enabled',
-						'value' => '1',
-					),
-					'start_date_clause' => array(
-						'key'     => '_mscsv_start_date',
-						'compare' => 'EXISTS',
-						'type'    => 'DATE',
-					),
-				),
-			)
-		);
+		$scheduled = $this->scheduled_post_ids();
 
-		// Fall back to any scheduled post when none carry a start date.
-		if ( empty( $posts ) ) {
-			$posts = get_posts(
-				array(
-					'post_type'      => $post_types,
-					'post_status'    => 'publish',
-					'posts_per_page' => 10,
-					'orderby'        => 'title',
-					'order'          => 'ASC',
-					'meta_query'     => array(
-						array(
-							'key'   => '_mscsv_enabled',
-							'value' => '1',
-						),
-					),
-				)
-			);
-		}
-
-		if ( empty( $posts ) ) {
+		if ( empty( $scheduled ) ) {
 			echo '<p>' . esc_html__( 'No posts with scheduled visibility.', 'msc-scheduled-visibility' ) . '</p>';
 			return;
 		}
+
+		$candidate_query = new \WP_Query(
+			array(
+				'post_type'              => $post_types,
+				'post_status'            => 'publish',
+				'posts_per_page'         => self::DASHBOARD_SCAN_LIMIT,
+				'post__in'               => $scheduled,
+				'fields'                 => 'ids',
+				'no_found_rows'          => true,
+				'ignore_sticky_posts'    => true,
+				'update_post_term_cache' => false,
+				'orderby'                => 'ID',
+				'order'                  => 'DESC',
+			)
+		);
+
+		$candidates = $candidate_query->posts;
+
+		if ( empty( $candidates ) ) {
+			echo '<p>' . esc_html__( 'No posts with scheduled visibility.', 'msc-scheduled-visibility' ) . '</p>';
+			return;
+		}
+
+		/*
+		 * Ordered on the real next-transition time rather than the raw start date:
+		 * which end of the window matters depends on the post's current status, so
+		 * the comparison cannot be expressed as a single SQL sort without joining
+		 * postmeta. Note the ordering is over the scanned slice only — on a site with
+		 * more than DASHBOARD_SCAN_LIMIT scheduled posts the widget reports on the
+		 * most recent of them, not on every one.
+		 */
+		$rows = array();
+
+		foreach ( $candidates as $candidate_id ) {
+			$status = (string) get_post_meta( $candidate_id, '_mscsv_status', true );
+
+			$rows[] = array(
+				'id'     => (int) $candidate_id,
+				'status' => $status,
+				'next'   => $this->get_next_transition_timestamp( $candidate_id, $status ),
+			);
+		}
+
+		usort(
+			$rows,
+			static function ( $a, $b ) {
+				// Soonest change first; posts with nothing pending sort to the end.
+				if ( $a['next'] && $b['next'] ) {
+					return $a['next'] <=> $b['next'];
+				}
+
+				if ( $a['next'] ) {
+					return -1;
+				}
+
+				if ( $b['next'] ) {
+					return 1;
+				}
+
+				return 0;
+			}
+		);
+
+		$rows = array_slice( $rows, 0, 10 );
 
 		echo '<table class="widefat fixed striped">';
 		echo '<thead><tr>';
@@ -889,17 +1181,16 @@ class Module {
 		echo '<th>' . esc_html__( 'Next Change', 'msc-scheduled-visibility' ) . '</th>';
 		echo '</tr></thead><tbody>';
 
-		foreach ( $posts as $p ) {
-			$status = get_post_meta( $p->ID, '_mscsv_status', true );
-			$next   = $this->get_next_transition_time( $p->ID, $status );
-			$edit   = get_edit_post_link( $p->ID );
+		foreach ( $rows as $row ) {
+			$next = $this->get_next_transition_time( $row['id'], $row['status'] );
+			$edit = get_edit_post_link( $row['id'] );
 
 			echo '<tr>';
-			printf( '<td><a href="%s">%s</a></td>', esc_url( $edit ), esc_html( $p->post_title ) );
+			printf( '<td><a href="%s">%s</a></td>', esc_url( $edit ), esc_html( get_the_title( $row['id'] ) ) );
 			printf(
 				'<td><span class="mscsv-badge mscsv-badge--%s">%s</span></td>',
-				esc_attr( $status ),
-				esc_html( $this->status_label( $status ) )
+				esc_attr( $row['status'] ),
+				esc_html( $this->status_label( $row['status'] ) )
 			);
 			printf( '<td>%s</td>', $next ? esc_html( $next ) : '&mdash;' );
 			echo '</tr>';
@@ -913,68 +1204,26 @@ class Module {
 	// =========================================================================
 
 	/**
-	 * Filter frontend queries to exclude hidden posts.
+	 * Whether visitor-facing visibility rules apply to the current request.
 	 *
-	 * @param \WP_Query $query Query object.
-	 * @return void
+	 * `is_admin()` alone is the wrong test. It reports true for admin-ajax.php even
+	 * when the caller is logged out, and themes routinely serve front-end search,
+	 * filtering and infinite scroll through that endpoint — so treating those requests
+	 * as admin traffic would hand scheduled-out content straight to visitors.
+	 *
+	 * Admin AJAX is therefore filtered too, except for callers who can edit posts:
+	 * their own admin screens (Quick Edit's inline-save, for one) run through AJAX and
+	 * must keep seeing everything. Anyone below that level has no admin AJAX UI to
+	 * break, and is exactly who the schedule is meant to hide content from.
+	 *
+	 * @return bool
 	 */
-	public function filter_frontend_query( $query ) {
-		if ( is_admin() ) {
-			return;
+	public function is_visitor_facing_request() {
+		if ( ! is_admin() ) {
+			return true;
 		}
 
-		// Allow admins/editors to see everything on frontend.
-		if ( $this->can_bypass() ) {
-			return;
-		}
-
-		if ( ! $query->is_main_query() && ! $this->is_query_for_enabled_type( $query ) ) {
-			return;
-		}
-
-		$post_types = $this->get_post_types();
-		$query_type = $query->get( 'post_type' );
-
-		// Only filter if the query involves enabled post types.
-		if ( ! empty( $query_type ) ) {
-			$query_types = (array) $query_type;
-			if ( empty( array_intersect( $query_types, $post_types ) ) ) {
-				return;
-			}
-		}
-
-		// Exclude posts that have scheduling enabled and are currently NOT visible.
-		$meta_query = $query->get( 'meta_query' );
-		if ( ! is_array( $meta_query ) ) {
-			$meta_query = array();
-		}
-
-		$meta_query[] = array(
-			'relation' => 'OR',
-			// Posts without scheduling enabled — always show.
-			array(
-				'key'     => '_mscsv_enabled',
-				'compare' => 'NOT EXISTS',
-			),
-			array(
-				'key'   => '_mscsv_enabled',
-				'value' => '0',
-			),
-			// Posts with scheduling enabled and status is visible.
-			array(
-				'relation' => 'AND',
-				array(
-					'key'   => '_mscsv_enabled',
-					'value' => '1',
-				),
-				array(
-					'key'   => '_mscsv_status',
-					'value' => 'visible',
-				),
-			),
-		);
-
-		$query->set( 'meta_query', $meta_query );
+		return wp_doing_ajax() && ! current_user_can( 'edit_posts' );
 	}
 
 	/**
@@ -985,7 +1234,7 @@ class Module {
 	 * @return array<\WP_Post>
 	 */
 	public function filter_posts_results( $posts, $query ) {
-		if ( is_admin() || $this->can_bypass() || ! $query->is_singular ) {
+		if ( ! $this->is_visitor_facing_request() || $this->can_bypass() || ! $query->is_singular ) {
 			return $posts;
 		}
 
@@ -995,16 +1244,19 @@ class Module {
 	/**
 	 * Trim hidden posts from list queries.
 	 *
-	 * The `pre_get_posts` meta_query can only test the status written by cron. Recurring
-	 * windows resolve on a finer granularity than the 5-minute cron, and role rules are
+	 * The `pre_get_posts` exclusion can only test the status written by cron. Recurring
+	 * windows resolve on a finer granularity than the cron sweep, and role rules are
 	 * per-visitor and cannot be stored at all, so both are settled here.
+	 *
+	 * Because this pass rechecks every post live, the query-level exclusion is only an
+	 * optimisation — visibility stays correct even before the status backfill has run.
 	 *
 	 * @param array<\WP_Post> $posts Post objects.
 	 * @param \WP_Query       $query Query object.
 	 * @return array<\WP_Post>
 	 */
 	public function filter_the_posts( $posts, $query ) {
-		if ( is_admin() || empty( $posts ) || $this->can_bypass() ) {
+		if ( ! $this->is_visitor_facing_request() || empty( $posts ) || $this->can_bypass() ) {
 			return $posts;
 		}
 
@@ -1026,11 +1278,27 @@ class Module {
 		$post_types = $this->get_post_types();
 
 		foreach ( $posts as $key => $post ) {
-			if ( ! isset( $post->ID ) || ! in_array( $post->post_type, $post_types, true ) ) {
+			/*
+			 * Both result shapes have to be handled. A query asking for
+			 * `fields => 'ids'` hands back bare IDs — WooCommerce's shortcode and
+			 * block product lists do exactly that — and skipping those would let a
+			 * scheduled-out product through, since nothing narrows the query itself.
+			 */
+			if ( is_numeric( $post ) ) {
+				$post_id   = (int) $post;
+				$post_type = get_post_type( $post_id );
+			} elseif ( isset( $post->ID ) ) {
+				$post_id   = (int) $post->ID;
+				$post_type = $post->post_type;
+			} else {
 				continue;
 			}
 
-			if ( ! $this->is_post_visible( $post->ID ) ) {
+			if ( ! in_array( $post_type, $post_types, true ) ) {
+				continue;
+			}
+
+			if ( ! $this->is_post_visible( $post_id ) ) {
 				unset( $posts[ $key ] );
 			}
 		}
@@ -1045,7 +1313,7 @@ class Module {
 	 * @return string
 	 */
 	public function filter_content( $content ) {
-		if ( is_admin() || $this->can_bypass() ) {
+		if ( ! $this->is_visitor_facing_request() || $this->can_bypass() ) {
 			return $content;
 		}
 
@@ -1067,7 +1335,11 @@ class Module {
 		 * @param string $message Replacement content.
 		 * @param int    $post_id Post ID.
 		 */
-		return apply_filters( 'mscsv_hidden_content_message', '', $post_id );
+		$message = apply_filters( 'mscsv_hidden_content_message', '', $post_id );
+
+		// The return value of a `the_content` callback is echoed by core, so anything a
+		// filter hands back has to be safe as post markup before it leaves here.
+		return wp_kses_post( (string) $message );
 	}
 
 	// =========================================================================
@@ -1310,9 +1582,28 @@ class Module {
 	 * @return array<string,array>
 	 */
 	public function register_cron_schedule( $schedules ) {
-		$schedules['mscsv_five_minutes'] = array(
-			'interval' => 300,
-			'display'  => __( 'Every 5 Minutes', 'msc-scheduled-visibility' ),
+		/*
+		 * 900 is written out rather than held in a constant so the interval stays
+		 * statically checkable. Plugin::ensure_cron() declares the same recurrence for
+		 * the activation request, where this class is not yet constructed — the two
+		 * definitions have to stay in step.
+		 *
+		 * The sweep only refreshes the *stored* status, which drives admin listings and
+		 * the status counts. Visitor-facing visibility is resolved live on every
+		 * request, so the interval costs admin freshness, not front-end correctness.
+		 */
+		$schedules[ self::CRON_RECURRENCE ] = array(
+			'interval' => 900,
+
+			/*
+			 * Not translated, for two reasons. Plugin::ensure_cron() runs at
+			 * plugins_loaded and reaches wp_schedule_event() whenever the event needs
+			 * self-healing, which fires `cron_schedules` before `init` — translating
+			 * here would trip the "_load_textdomain_just_in_time was called
+			 * incorrectly" notice on that path. The label is also only ever surfaced by
+			 * cron-inspection tools, and the ensure_cron() copy is a plain string too.
+			 */
+			'display'  => 'Every 15 Minutes',
 		);
 		return $schedules;
 	}
@@ -1329,37 +1620,71 @@ class Module {
 			return;
 		}
 
-		$paged = 1;
+		// Sites upgrading from a version that had no status taxonomy carry schedules
+		// with no term yet, and the sweep below can only find posts by term. Seed
+		// them first, one batch per run.
+		if ( $this->backfill_status_terms( $post_types ) ) {
+			return;
+		}
 
-		// Batched so a site with thousands of scheduled posts does not load them
-		// all into memory in a single query.
-		do {
-			$batch = get_posts(
-				array(
-					'post_type'              => $post_types,
-					'post_status'            => 'publish',
-					'posts_per_page'         => self::CRON_BATCH_SIZE,
-					'paged'                  => $paged,
-					'fields'                 => 'ids',
-					'no_found_rows'          => true,
-					'ignore_sticky_posts'    => true,
-					'update_post_term_cache' => false,
-					'meta_query'             => array(
-						array(
-							'key'   => '_mscsv_enabled',
-							'value' => '1',
-						),
-					),
-				)
-			);
+		// The term relationships already are the list of scheduled posts, so the
+		// sweep needs no post query at all — one indexed read, then recompute each.
+		foreach ( $this->scheduled_post_ids() as $post_id ) {
+			$this->refresh_status( $post_id );
+		}
+	}
 
-			foreach ( $batch as $post_id ) {
-				$this->refresh_status( $post_id );
-			}
+	/**
+	 * Seed status terms for schedules written before the taxonomy existed.
+	 *
+	 * Walks every post of an enabled type once, in cron-sized batches, calling
+	 * refresh_status() — which writes the term for a scheduled post and clears it
+	 * for an unscheduled one. Deliberately unfiltered: selecting only the scheduled
+	 * posts would need the postmeta lookup this change exists to remove, and the
+	 * walk runs once per site.
+	 *
+	 * @param array<int,string> $post_types Enabled post types.
+	 * @return bool True while the backfill is still running.
+	 */
+	private function backfill_status_terms( $post_types ) {
+		if ( get_option( 'mscsv_status_terms_backfilled' ) ) {
+			return false;
+		}
 
-			$fetched = count( $batch );
-			++$paged;
-		} while ( self::CRON_BATCH_SIZE === $fetched );
+		$paged = max( 1, (int) get_option( 'mscsv_status_terms_backfill_page', 1 ) );
+
+		$batch_query = new \WP_Query(
+			array(
+				'post_type'              => $post_types,
+				// Any status, not just publish: the REST list reports on drafts too,
+				// so their terms have to be seeded as well.
+				'post_status'            => 'any',
+				'posts_per_page'         => self::CRON_BATCH_SIZE,
+				'paged'                  => $paged,
+				'fields'                 => 'ids',
+				'no_found_rows'          => true,
+				'ignore_sticky_posts'    => true,
+				'update_post_term_cache' => false,
+				'orderby'                => 'ID',
+				'order'                  => 'ASC',
+			)
+		);
+
+		$batch = $batch_query->posts;
+
+		foreach ( $batch as $post_id ) {
+			$this->refresh_status( $post_id );
+		}
+
+		if ( count( $batch ) < self::CRON_BATCH_SIZE ) {
+			update_option( 'mscsv_status_terms_backfilled', 1 );
+			delete_option( 'mscsv_status_terms_backfill_page' );
+			return false;
+		}
+
+		update_option( 'mscsv_status_terms_backfill_page', $paged + 1 );
+
+		return true;
 	}
 
 	// =========================================================================
@@ -1580,30 +1905,46 @@ class Module {
 	 * @return string|false Human-readable time string or false.
 	 */
 	public function get_next_transition_time( $post_id, $status ) {
+		$timestamp = $this->get_next_transition_timestamp( $post_id, $status );
+
+		if ( ! $timestamp ) {
+			return false;
+		}
+
 		if ( 'scheduled' === $status ) {
-			$timestamp = $this->build_timestamp(
+			/* translators: %s: localised date and time. */
+			return sprintf( __( 'Shows: %s', 'msc-scheduled-visibility' ), $this->format_timestamp( $timestamp ) );
+		}
+
+		/* translators: %s: localised date and time. */
+		return sprintf( __( 'Hides: %s', 'msc-scheduled-visibility' ), $this->format_timestamp( $timestamp ) );
+	}
+
+	/**
+	 * Timestamp of a post's next visibility change.
+	 *
+	 * Which end of the window matters depends on the current status: a scheduled
+	 * post is waiting to show, a visible one is waiting to hide.
+	 *
+	 * @param int    $post_id Post ID.
+	 * @param string $status  Current status.
+	 * @return int|false Unix timestamp, or false when nothing is pending.
+	 */
+	public function get_next_transition_timestamp( $post_id, $status ) {
+		if ( 'scheduled' === $status ) {
+			return $this->build_timestamp(
 				get_post_meta( $post_id, '_mscsv_start_date', true ),
 				get_post_meta( $post_id, '_mscsv_start_time', true ),
 				'00:00'
 			);
-
-			if ( $timestamp ) {
-				/* translators: %s: localised date and time. */
-				return sprintf( __( 'Shows: %s', 'msc-scheduled-visibility' ), $this->format_timestamp( $timestamp ) );
-			}
 		}
 
 		if ( 'visible' === $status ) {
-			$timestamp = $this->build_timestamp(
+			return $this->build_timestamp(
 				get_post_meta( $post_id, '_mscsv_end_date', true ),
 				get_post_meta( $post_id, '_mscsv_end_time', true ),
 				'23:59'
 			);
-
-			if ( $timestamp ) {
-				/* translators: %s: localised date and time. */
-				return sprintf( __( 'Hides: %s', 'msc-scheduled-visibility' ), $this->format_timestamp( $timestamp ) );
-			}
 		}
 
 		return false;
@@ -1620,20 +1961,58 @@ class Module {
 	}
 
 	/**
-	 * Check if a query is for an enabled post type.
+	 * Sanitize the block-schedules meta blob.
 	 *
-	 * @param \WP_Query $query Query object.
-	 * @return bool
+	 * Rebuilds the structure key by key rather than trusting the submitted JSON, so a
+	 * REST client cannot store arbitrary shapes or values in a field the front end
+	 * later decodes and acts on.
+	 *
+	 * @param mixed $value Raw meta value.
+	 * @return string JSON-encoded schedule map, or an empty string.
 	 */
-	private function is_query_for_enabled_type( $query ) {
-		$post_types  = $this->get_post_types();
-		$query_types = (array) $query->get( 'post_type' );
-
-		if ( empty( $query_types ) || in_array( '', $query_types, true ) || in_array( 'any', $query_types, true ) ) {
-			return true;
+	public function sanitize_block_schedules_meta( $value ) {
+		if ( ! is_string( $value ) || '' === $value ) {
+			return '';
 		}
 
-		return ! empty( array_intersect( $query_types, $post_types ) );
+		$decoded = json_decode( $value, true );
+
+		if ( ! is_array( $decoded ) ) {
+			return '';
+		}
+
+		$clean = array();
+
+		foreach ( $decoded as $key => $schedule ) {
+			if ( ! is_array( $schedule ) ) {
+				continue;
+			}
+
+			$clean[ sanitize_key( $key ) ] = array(
+				'enabled'    => ! empty( $schedule['enabled'] ),
+				'start_date' => $this->sanitize_date( $this->stringify( $schedule, 'start_date' ) ),
+				'start_time' => $this->sanitize_time( $this->stringify( $schedule, 'start_time' ) ),
+				'end_date'   => $this->sanitize_date( $this->stringify( $schedule, 'end_date' ) ),
+				'end_time'   => $this->sanitize_time( $this->stringify( $schedule, 'end_time' ) ),
+			);
+		}
+
+		return (string) wp_json_encode( $clean );
+	}
+
+	/**
+	 * Read a key from an array as a string, tolerating any submitted type.
+	 *
+	 * @param array<string,mixed> $source Source array.
+	 * @param string              $key    Key to read.
+	 * @return string
+	 */
+	private function stringify( $source, $key ) {
+		if ( ! isset( $source[ $key ] ) || ! is_scalar( $source[ $key ] ) ) {
+			return '';
+		}
+
+		return (string) $source[ $key ];
 	}
 
 	/**

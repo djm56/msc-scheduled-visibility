@@ -2,6 +2,18 @@
 
 All notable changes to MSC Scheduled Visibility are documented in this file.
 
+## [1.2.1] - 2026-08-19
+
+### Changed
+
+- Preview bar styles moved out of an inline `wp_head` block into an enqueued stylesheet (`assets/css/preview.css`)
+- Quick Edit row data now travels in data attributes on the visibility column instead of a JSON script element
+- The metabox preview hint takes its spacing from `admin.css` rather than a `style` attribute
+
+### Fixed
+
+- Output of the `mscsv_hidden_content_message` filter is run through `wp_kses_post()` before it is returned into `the_content`
+
 ## [1.2.0] - 2026-08-07
 
 ### Added

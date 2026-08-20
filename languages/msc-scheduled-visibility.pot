@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-07T06:58:32+00:00\n"
+"POT-Creation-Date: 2026-08-12T12:16:29+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: msc-scheduled-visibility\n"
@@ -38,196 +38,194 @@ msgstr ""
 msgid "Anomalous Developers"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-audit-log.php:167
+#: includes/class-msc-scheduled-visibility-audit-log.php:168
 #: includes/class-msc-scheduled-visibility-settings.php:102
 msgid "You do not have permission to access this page."
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-audit-log.php:194
+#: includes/class-msc-scheduled-visibility-audit-log.php:239
 msgid "Scheduled task"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-audit-log.php:203
+#: includes/class-msc-scheduled-visibility-audit-log.php:243
+#: includes/class-msc-scheduled-visibility-audit-log.php:252
 msgid "System"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:142
-#: includes/class-msc-scheduled-visibility-module.php:819
-#: includes/class-msc-scheduled-visibility-quick-edit.php:109
-#: includes/class-msc-scheduled-visibility-quick-edit.php:149
+#: includes/class-msc-scheduled-visibility-module.php:362
+#: includes/class-msc-scheduled-visibility-module.php:1088
+#: includes/class-msc-scheduled-visibility-quick-edit.php:112
+#: includes/class-msc-scheduled-visibility-quick-edit.php:152
 msgid "Scheduled Visibility"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:171
-#: includes/class-msc-scheduled-visibility-quick-edit.php:113
+#: includes/class-msc-scheduled-visibility-module.php:391
+#: includes/class-msc-scheduled-visibility-quick-edit.php:116
 #: includes/class-msc-scheduled-visibility-settings.php:282
 msgid "Enable scheduled visibility"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:177
+#: includes/class-msc-scheduled-visibility-module.php:397
 msgid "Visible From"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:182
+#: includes/class-msc-scheduled-visibility-module.php:402
 msgid "Visible Until"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:188
+#: includes/class-msc-scheduled-visibility-module.php:408
 msgid "Status:"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:238
+#: includes/class-msc-scheduled-visibility-module.php:458
 msgid "Sun"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:239
+#: includes/class-msc-scheduled-visibility-module.php:459
 msgid "Mon"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:240
+#: includes/class-msc-scheduled-visibility-module.php:460
 msgid "Tue"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:241
+#: includes/class-msc-scheduled-visibility-module.php:461
 msgid "Wed"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:242
+#: includes/class-msc-scheduled-visibility-module.php:462
 msgid "Thu"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:243
+#: includes/class-msc-scheduled-visibility-module.php:463
 msgid "Fri"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:244
+#: includes/class-msc-scheduled-visibility-module.php:464
 msgid "Sat"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:252
+#: includes/class-msc-scheduled-visibility-module.php:472
 msgid "Enable recurring schedule"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:258
+#: includes/class-msc-scheduled-visibility-module.php:478
 msgid "Pattern:"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:260
+#: includes/class-msc-scheduled-visibility-module.php:480
 msgid "Daily"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:261
+#: includes/class-msc-scheduled-visibility-module.php:481
 msgid "Weekly"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:262
+#: includes/class-msc-scheduled-visibility-module.php:482
 msgid "Monthly"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:267
+#: includes/class-msc-scheduled-visibility-module.php:487
 msgid "Days:"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:277
+#: includes/class-msc-scheduled-visibility-module.php:497
 msgid "Day of month:"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:282
+#: includes/class-msc-scheduled-visibility-module.php:502
 msgid "Time window:"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:284
+#: includes/class-msc-scheduled-visibility-module.php:504
 msgid "to"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:289
+#: includes/class-msc-scheduled-visibility-module.php:509
 msgid "Valid from:"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:291
+#: includes/class-msc-scheduled-visibility-module.php:511
 msgid "until:"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:321
+#: includes/class-msc-scheduled-visibility-module.php:541
 #: includes/class-msc-scheduled-visibility-settings.php:402
 msgid "Enable role-based visibility"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:327
+#: includes/class-msc-scheduled-visibility-module.php:547
 msgid "Visible to:"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:338
+#: includes/class-msc-scheduled-visibility-module.php:558
 msgid "Also visible to logged-out visitors"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:645
+#: includes/class-msc-scheduled-visibility-module.php:899
 msgid "Choose a time or a role to preview."
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:716
-#: includes/class-msc-scheduled-visibility-module.php:721
+#: includes/class-msc-scheduled-visibility-module.php:985
+#: includes/class-msc-scheduled-visibility-module.php:990
 msgid "Visibility"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:764
+#: includes/class-msc-scheduled-visibility-module.php:1033
 #: includes/class-msc-scheduled-visibility-settings.php:80
 msgid "Recurring"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:768
+#: includes/class-msc-scheduled-visibility-module.php:1037
 msgid "Roles"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:794
+#: includes/class-msc-scheduled-visibility-module.php:1063
 msgid "Visible"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:795
+#: includes/class-msc-scheduled-visibility-module.php:1064
 msgid "Scheduled"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:796
+#: includes/class-msc-scheduled-visibility-module.php:1065
 msgid "Hidden"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:797
+#: includes/class-msc-scheduled-visibility-module.php:1066
 msgid "Expired"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:833
+#: includes/class-msc-scheduled-visibility-module.php:1102
 msgid "No post types are enabled for scheduling."
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:881
+#: includes/class-msc-scheduled-visibility-module.php:1109
+#: includes/class-msc-scheduled-visibility-module.php:1131
 msgid "No posts with scheduled visibility."
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:887
+#: includes/class-msc-scheduled-visibility-module.php:1179
 #: includes/class-msc-scheduled-visibility-settings.php:578
 msgid "Post"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:888
+#: includes/class-msc-scheduled-visibility-module.php:1180
 msgid "Status"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:889
+#: includes/class-msc-scheduled-visibility-module.php:1181
 msgid "Next Change"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-module.php:1315
-msgid "Every 5 Minutes"
-msgstr ""
-
 #. translators: %s: localised date and time.
-#: includes/class-msc-scheduled-visibility-module.php:1592
+#: includes/class-msc-scheduled-visibility-module.php:1912
 #, php-format
 msgid "Shows: %s"
 msgstr ""
 
 #. translators: %s: localised date and time.
-#: includes/class-msc-scheduled-visibility-module.php:1605
+#: includes/class-msc-scheduled-visibility-module.php:1916
 #, php-format
 msgid "Hides: %s"
 msgstr ""
@@ -281,57 +279,58 @@ msgstr ""
 msgid "Exit preview"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-quick-edit.php:118
-#: includes/class-msc-scheduled-visibility-quick-edit.php:162
+#: includes/class-msc-scheduled-visibility-quick-edit.php:121
+#: includes/class-msc-scheduled-visibility-quick-edit.php:165
 msgid "From"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-quick-edit.php:123
-#: includes/class-msc-scheduled-visibility-quick-edit.php:167
+#: includes/class-msc-scheduled-visibility-quick-edit.php:126
+#: includes/class-msc-scheduled-visibility-quick-edit.php:170
 msgid "Until"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-quick-edit.php:152
+#: includes/class-msc-scheduled-visibility-quick-edit.php:155
 msgid "Scheduling"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-quick-edit.php:154
+#: includes/class-msc-scheduled-visibility-quick-edit.php:157
 msgid "— No change —"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-quick-edit.php:155
+#: includes/class-msc-scheduled-visibility-quick-edit.php:158
 msgid "Enable"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-quick-edit.php:156
+#: includes/class-msc-scheduled-visibility-quick-edit.php:159
 msgid "Disable (clear schedule)"
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-quick-edit.php:172
+#: includes/class-msc-scheduled-visibility-quick-edit.php:175
 msgid "Dates left blank are not changed. Choose \"Enable\" to apply these dates to every selected post."
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-rest.php:156
+#: includes/class-msc-scheduled-visibility-rest.php:164
 msgid "You are not allowed to list scheduled content."
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-rest.php:177
-msgid "Post not found."
-msgstr ""
-
-#: includes/class-msc-scheduled-visibility-rest.php:185
-msgid "Scheduling is not enabled for this post type."
-msgstr ""
-
-#: includes/class-msc-scheduled-visibility-rest.php:193
+#: includes/class-msc-scheduled-visibility-rest.php:192
+#: includes/class-msc-scheduled-visibility-rest.php:218
 msgid "You are not allowed to access this schedule."
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-rest.php:446
+#: includes/class-msc-scheduled-visibility-rest.php:202
+msgid "Post not found."
+msgstr ""
+
+#: includes/class-msc-scheduled-visibility-rest.php:210
+msgid "Scheduling is not enabled for this post type."
+msgstr ""
+
+#: includes/class-msc-scheduled-visibility-rest.php:484
 msgid "Dates must use the YYYY-MM-DD format."
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-rest.php:468
+#: includes/class-msc-scheduled-visibility-rest.php:506
 msgid "Times must use the 24-hour HH:MM format."
 msgstr ""
 
@@ -341,8 +340,9 @@ msgid "General"
 msgstr ""
 
 #: includes/class-msc-scheduled-visibility-settings.php:79
-#: src/block-scheduling/index.js:121
-#: src/block-scheduling/index.js:126
+#: build/index.js:1
+#: src/block-scheduling/index.js:120
+#: src/block-scheduling/index.js:125
 msgid "Block Scheduling"
 msgstr ""
 
@@ -605,7 +605,7 @@ msgid "When does the visibility change occur?"
 msgstr ""
 
 #: includes/class-msc-scheduled-visibility-settings.php:663
-msgid "Visibility changes are processed by WordPress scheduled events (cron) every 5 minutes. The change will occur shortly after the scheduled time. Visitors never see stale content in the meantime — the schedule is also checked live on every page view."
+msgid "Visibility changes are processed by WordPress scheduled events (cron) every 15 minutes, which is what keeps the status shown in admin listings current. Visitors never see stale content in the meantime — the schedule is also checked live on every page view."
 msgstr ""
 
 #: includes/class-msc-scheduled-visibility-settings.php:665
@@ -694,43 +694,50 @@ msgid "%1$d visible, %2$d upcoming, %3$d hidden, %4$d expired"
 msgstr ""
 
 #. translators: %s: product name.
-#: includes/class-msc-scheduled-visibility-woocommerce.php:205
+#: includes/class-msc-scheduled-visibility-woocommerce.php:140
 #, php-format
 msgid "\"%s\" is no longer available and has been removed from your cart."
 msgstr ""
 
-#: includes/class-msc-scheduled-visibility-woocommerce.php:228
+#: includes/class-msc-scheduled-visibility-woocommerce.php:163
 msgid "This product is not currently available."
 msgstr ""
 
-#: msc-scheduled-visibility.php:88
+#: msc-scheduled-visibility.php:83
 msgid "Settings"
 msgstr ""
 
-#: src/block-scheduling/index.js:131
+#: build/index.js:1
+#: src/block-scheduling/index.js:130
 msgid "Select a block to configure its visibility schedule."
 msgstr ""
 
-#: src/block-scheduling/index.js:139
+#: build/index.js:1
+#: src/block-scheduling/index.js:138
 msgid "Enable schedule for this block"
 msgstr ""
 
-#: src/block-scheduling/index.js:147
+#: build/index.js:1
+#: src/block-scheduling/index.js:146
 msgid "Visible from (date)"
 msgstr ""
 
-#: src/block-scheduling/index.js:153
+#: build/index.js:1
+#: src/block-scheduling/index.js:152
 msgid "Visible from (time)"
 msgstr ""
 
-#: src/block-scheduling/index.js:159
+#: build/index.js:1
+#: src/block-scheduling/index.js:158
 msgid "Visible until (date)"
 msgstr ""
 
-#: src/block-scheduling/index.js:165
+#: build/index.js:1
+#: src/block-scheduling/index.js:164
 msgid "Visible until (time)"
 msgstr ""
 
-#: src/block-scheduling/index.js:178
+#: build/index.js:1
+#: src/block-scheduling/index.js:177
 msgid "All Block Schedules"
 msgstr ""

@@ -140,7 +140,7 @@ class Preview {
 		$this->module->flush_visibility_cache();
 
 		add_action( 'wp_footer', array( $this, 'render_preview_bar' ), 100 );
-		add_action( 'wp_head', array( $this, 'render_preview_styles' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_preview_styles' ) );
 		add_filter( 'wp_robots', 'wp_robots_no_robots' );
 	}
 
@@ -249,7 +249,7 @@ class Preview {
 		<div class="mscsv-extra-section mscsv-preview-section">
 			<hr />
 			<p><strong><?php esc_html_e( 'Preview schedule', 'msc-scheduled-visibility' ); ?></strong></p>
-			<p class="description" style="margin-bottom:8px;">
+			<p class="description mscsv-preview-section__hint">
 				<?php esc_html_e( 'Open the front end as it will look at a chosen moment, or to a chosen role.', 'msc-scheduled-visibility' ); ?>
 			</p>
 
@@ -286,30 +286,17 @@ class Preview {
 	}
 
 	/**
-	 * Inline styles for the front-end preview bar.
+	 * Enqueue the front-end preview bar stylesheet.
 	 *
 	 * @return void
 	 */
-	public function render_preview_styles() {
-		?>
-		<style id="mscsv-preview-styles">
-			.mscsv-preview-bar {
-				position: fixed;
-				z-index: 99999;
-				bottom: 0;
-				left: 0;
-				right: 0;
-				padding: 10px 16px;
-				background: #1d2327;
-				color: #fff;
-				font: 400 13px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-				text-align: center;
-				box-shadow: 0 -2px 8px rgba( 0, 0, 0, 0.25 );
-			}
-			.mscsv-preview-bar strong { color: #72aee6; }
-			.mscsv-preview-bar a { color: #f0f0f1; text-decoration: underline; margin-left: 12px; }
-		</style>
-		<?php
+	public function enqueue_preview_styles() {
+		wp_enqueue_style(
+			'mscsv-preview',
+			MSCSV_PLUGIN_URL . 'assets/css/preview.css',
+			array(),
+			MSCSV_PLUGIN_VERSION
+		);
 	}
 
 	/**

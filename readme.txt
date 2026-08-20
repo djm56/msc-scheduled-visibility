@@ -1,14 +1,14 @@
 === MSC Scheduled Visibility ===
-Contributors: anomalous
+Contributors: djm56
 Tags: scheduling,visibility,content,blocks,recurring
 Requires at least: 5.9
-Tested up to: 6.8
+Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 License: GPL-2.0+
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Schedule posts, pages and products to appear and disappear between specific dates and times. Block-level scheduling, recurring windows and role-based visibility.
+Schedule posts, pages and products to appear and disappear between set dates and times, with recurring windows and role-based visibility.
 
 == Description ==
 
@@ -41,7 +41,10 @@ In the block editor, open the "Block Scheduling" sidebar panel (calendar icon). 
 Users who can edit other people's posts bypass scheduling so they can proof upcoming content. Use the "Preview schedule" control in the post metabox, or view the site logged out, to see what visitors get.
 
 = Does this depend on WP-Cron running? =
-No. Cron keeps the stored status current for list queries, but every page view also checks the schedule live, so visitors never see content past its window even if cron is delayed.
+No. Cron keeps the stored status current for admin listings, but every page view also checks the schedule live, so visitors never see content past its window even if cron is delayed.
+
+= Why does an archive page sometimes show fewer posts than usual? =
+Hidden posts are removed as results are returned rather than excluded in the database query, because whether a post is visible can depend on the current visitor's role. A page set to ten posts will show eight if two of them are outside their window, and the page count can be slightly over-reported. Visibility itself is always correct.
 
 = What timezone do the dates use? =
 The site timezone set under Settings > General.
@@ -53,6 +56,11 @@ The site timezone set under Settings > General.
 3. Configure from Settings > MSC Scheduled Visibility.
 
 == Changelog ==
+
+= 1.2.1 =
+* Preview bar CSS is now enqueued as a stylesheet instead of printed inline
+* Quick Edit row data moved from a JSON script element to data attributes
+* Filtered replacement content for hidden posts is escaped with wp_kses_post() before output
 
 = 1.2.0 =
 * Added Quick Edit and Bulk Edit support for visibility windows

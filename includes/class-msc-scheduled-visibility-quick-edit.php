@@ -69,24 +69,24 @@ class Quick_Edit {
 	}
 
 	/**
-	 * Output the current schedule for a row as JSON for the Quick Edit script.
+	 * Output the current schedule for a row as data attributes for the Quick Edit script.
+	 *
+	 * Attributes rather than a JSON script element: the values are a handful of
+	 * scalars, so there is nothing here that needs a script element, and this keeps the
+	 * column output plain markup.
 	 *
 	 * @param int $post_id Post ID.
 	 * @return void
 	 */
 	public function render_inline_data( $post_id ) {
-		$data = array(
-			'enabled'    => (int) get_post_meta( $post_id, '_mscsv_enabled', true ),
-			'start_date' => (string) get_post_meta( $post_id, '_mscsv_start_date', true ),
-			'start_time' => (string) get_post_meta( $post_id, '_mscsv_start_time', true ),
-			'end_date'   => (string) get_post_meta( $post_id, '_mscsv_end_date', true ),
-			'end_time'   => (string) get_post_meta( $post_id, '_mscsv_end_time', true ),
-		);
-
 		printf(
-			'<script type="application/json" class="mscsv-inline-data" id="mscsv-inline-%d">%s</script>',
+			'<span class="mscsv-inline-data" id="mscsv-inline-%1$d" data-enabled="%2$d" data-start-date="%3$s" data-start-time="%4$s" data-end-date="%5$s" data-end-time="%6$s"></span>',
 			(int) $post_id,
-			wp_json_encode( $data )
+			(int) get_post_meta( $post_id, '_mscsv_enabled', true ),
+			esc_attr( (string) get_post_meta( $post_id, '_mscsv_start_date', true ) ),
+			esc_attr( (string) get_post_meta( $post_id, '_mscsv_start_time', true ) ),
+			esc_attr( (string) get_post_meta( $post_id, '_mscsv_end_date', true ) ),
+			esc_attr( (string) get_post_meta( $post_id, '_mscsv_end_time', true ) )
 		);
 	}
 
@@ -212,10 +212,10 @@ class Quick_Edit {
 			$post_id,
 			array(
 				'enabled'    => isset( $_POST['mscsv_enabled'] ),
-				'start_date' => isset( $_POST['mscsv_start_date'] ) ? wp_unslash( $_POST['mscsv_start_date'] ) : '',
-				'start_time' => isset( $_POST['mscsv_start_time'] ) ? wp_unslash( $_POST['mscsv_start_time'] ) : '',
-				'end_date'   => isset( $_POST['mscsv_end_date'] ) ? wp_unslash( $_POST['mscsv_end_date'] ) : '',
-				'end_time'   => isset( $_POST['mscsv_end_time'] ) ? wp_unslash( $_POST['mscsv_end_time'] ) : '',
+				'start_date' => isset( $_POST['mscsv_start_date'] ) ? sanitize_text_field( wp_unslash( $_POST['mscsv_start_date'] ) ) : '',
+				'start_time' => isset( $_POST['mscsv_start_time'] ) ? sanitize_text_field( wp_unslash( $_POST['mscsv_start_time'] ) ) : '',
+				'end_date'   => isset( $_POST['mscsv_end_date'] ) ? sanitize_text_field( wp_unslash( $_POST['mscsv_end_date'] ) ) : '',
+				'end_time'   => isset( $_POST['mscsv_end_time'] ) ? sanitize_text_field( wp_unslash( $_POST['mscsv_end_time'] ) ) : '',
 			)
 		);
 	}

@@ -3,15 +3,15 @@
  * Bootstrap file for MSC Scheduled Visibility.
  *
  * Plugin Name: MSC Scheduled Visibility
- * Plugin URI: https://anomalous.co.za
+ * Plugin URI: https://github.com/djm56/msc-scheduled-visibility
  * Description: Schedule posts and pages to appear and disappear between specific dates and times. Includes block-level scheduling, recurring schedules, role-based visibility, WooCommerce product scheduling, quick/bulk edit, schedule preview, history and a REST API.
- * Version: 1.2.0
+ * Version: 1.2.1
  * Author: Anomalous Developers
  * Author URI: https://anomalous.co.za
  * Text Domain: msc-scheduled-visibility
  * Domain Path: /languages
  * Requires at least: 5.9
- * Tested up to: 6.8
+ * Tested up to: 7.0
  * Requires PHP: 7.4
  * License: GPL-2.0+
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Current plugin version.
  */
-define( 'MSCSV_PLUGIN_VERSION', '1.2.0' );
+define( 'MSCSV_PLUGIN_VERSION', '1.2.1' );
 
 /**
  * Absolute path to the main plugin file.
@@ -65,13 +65,8 @@ register_deactivation_hook(
 add_action(
 	'plugins_loaded',
 	static function () {
-		// Load translation files from the plugin languages directory.
-		load_plugin_textdomain(
-			'msc-scheduled-visibility',
-			false,
-			dirname( plugin_basename( __FILE__ ) ) . '/languages'
-		);
-
+		// Translations are loaded automatically by WordPress from the plugin slug;
+		// no load_plugin_textdomain() call is needed (core handles this since 4.6).
 		MSC_Scheduled_Visibility\Plugin::instance();
 
 		// Self-heal a missing cron event (lost update, cron table reset).

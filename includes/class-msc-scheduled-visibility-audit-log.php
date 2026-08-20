@@ -90,12 +90,13 @@ class Audit_Log {
 
 		$this->add(
 			array(
-				'post_id' => (int) $post_id,
-				'title'   => get_the_title( $post_id ),
-				'from'    => (string) $old_status,
-				'to'      => (string) $new_status,
-				'time'    => time(),
-				'actor'   => $this->describe_actor(),
+				'post_id'    => (int) $post_id,
+				'title'      => get_the_title( $post_id ),
+				'from'       => (string) $old_status,
+				'to'         => (string) $new_status,
+				'time'       => time(),
+				'actor'      => $this->describe_actor(),
+				'actor_type' => $this->actor_type(),
 			)
 		);
 	}
@@ -190,16 +191,64 @@ class Audit_Log {
 	 * @return string
 	 */
 	private function describe_actor() {
+		$user = wp_get_current_user();
+
+		if ( ! wp_doing_cron() && $user && $user->exists() ) {
+			return $user->display_name;
+		}
+
+		return '';
+	}
+
+	/**
+	 * Stable token for whoever triggered a transition.
+	 *
+	 * Kept separate from the display name so nothing translated is written to the
+	 * database. A label stored at write time would be frozen in the locale of the
+	 * request that happened to make it — the site locale for cron, the editor's own
+	 * locale for a manual save — leaving the History tab a mix of languages that
+	 * ignores the locale of whoever is reading it.
+	 *
+	 * @return string One of `cron`, `user` or `system`.
+	 */
+	private function actor_type() {
 		if ( wp_doing_cron() ) {
-			return __( 'Scheduled task', 'msc-scheduled-visibility' );
+			return 'cron';
 		}
 
 		$user = wp_get_current_user();
 
 		if ( $user && $user->exists() ) {
-			return $user->display_name;
+			return 'user';
 		}
 
-		return __( 'System', 'msc-scheduled-visibility' );
+		return 'system';
+	}
+
+	/**
+	 * Human-readable actor for a log entry, translated at read time.
+	 *
+	 * @param array<string,mixed> $entry Log entry.
+	 * @return string
+	 */
+	public function actor_label( $entry ) {
+		$type = isset( $entry['actor_type'] ) ? (string) $entry['actor_type'] : '';
+		$name = isset( $entry['actor'] ) ? (string) $entry['actor'] : '';
+
+		if ( 'cron' === $type ) {
+			return __( 'Scheduled task', 'msc-scheduled-visibility' );
+		}
+
+		if ( 'system' === $type ) {
+			return __( 'System', 'msc-scheduled-visibility' );
+		}
+
+		if ( '' !== $name ) {
+			return $name;
+		}
+
+		// Entries written before actor_type existed stored a display name, or a label
+		// already translated into whatever locale wrote it. Pass those through as-is.
+		return '' === $type ? $name : __( 'System', 'msc-scheduled-visibility' );
 	}
 }

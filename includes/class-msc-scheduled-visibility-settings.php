@@ -113,8 +113,8 @@ class Settings {
 				$post_types = array();
 				if ( ! empty( $_POST['post_types'] ) && is_array( $_POST['post_types'] ) ) {
 					$registered = get_post_types( array( 'public' => true ), 'names' );
-					foreach ( wp_unslash( $_POST['post_types'] ) as $pt ) {
-						$pt = sanitize_key( $pt );
+					$submitted  = array_map( 'sanitize_key', wp_unslash( $_POST['post_types'] ) );
+					foreach ( $submitted as $pt ) {
 						if ( isset( $registered[ $pt ] ) ) {
 							$post_types[] = $pt;
 						}
@@ -606,7 +606,7 @@ class Settings {
 								<?php echo esc_html( $this->module->status_label( isset( $entry['to'] ) ? $entry['to'] : '' ) ); ?>
 							</span>
 						</td>
-						<td><?php echo esc_html( isset( $entry['actor'] ) ? $entry['actor'] : '' ); ?></td>
+						<td><?php echo esc_html( $this->audit_log->actor_label( $entry ) ); ?></td>
 					</tr>
 				<?php endforeach; ?>
 			</tbody>
@@ -660,7 +660,7 @@ class Settings {
 			</ol>
 
 			<h4><?php esc_html_e( 'When does the visibility change occur?', 'msc-scheduled-visibility' ); ?></h4>
-			<p><?php esc_html_e( 'Visibility changes are processed by WordPress scheduled events (cron) every 5 minutes. The change will occur shortly after the scheduled time. Visitors never see stale content in the meantime — the schedule is also checked live on every page view.', 'msc-scheduled-visibility' ); ?></p>
+			<p><?php esc_html_e( 'Visibility changes are processed by WordPress scheduled events (cron) every 15 minutes, which is what keeps the status shown in admin listings current. Visitors never see stale content in the meantime — the schedule is also checked live on every page view.', 'msc-scheduled-visibility' ); ?></p>
 
 			<h4><?php esc_html_e( 'Why can I still see a hidden post?', 'msc-scheduled-visibility' ); ?></h4>
 			<p><?php esc_html_e( 'Users who can edit other people\'s posts bypass scheduling so they can proof upcoming content. Use the preview control, or view the site logged out, to see what visitors get.', 'msc-scheduled-visibility' ); ?></p>
@@ -758,27 +758,18 @@ class Settings {
 			return $counts;
 		}
 
+		/*
+		 * Read straight off the term counts. Core keeps these current through
+		 * _update_post_term_count(), which counts published posts of the taxonomy's
+		 * own object types — the same set the old per-status WP_Query measured, but
+		 * without running four queries to get it.
+		 */
 		foreach ( array_keys( $counts ) as $status ) {
-			$query = new \WP_Query(
-				array(
-					'post_type'      => $post_types,
-					'post_status'    => 'publish',
-					'posts_per_page' => 1,
-					'fields'         => 'ids',
-					'meta_query'     => array(
-						array(
-							'key'   => '_mscsv_enabled',
-							'value' => '1',
-						),
-						array(
-							'key'   => '_mscsv_status',
-							'value' => $status,
-						),
-					),
-				)
-			);
+			$term = get_term_by( 'slug', $status, Module::STATUS_TAXONOMY );
 
-			$counts[ $status ] = (int) $query->found_posts;
+			if ( $term instanceof \WP_Term ) {
+				$counts[ $status ] = (int) $term->count;
+			}
 		}
 
 		return $counts;

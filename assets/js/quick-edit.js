@@ -3,7 +3,7 @@
  *
  * Core's inline editor clones a blank copy of our fieldset into the row being
  * edited, so the current schedule has to be copied across by hand. Each row
- * carries its values in a JSON script tag written by the visibility column.
+ * carries its values in data attributes written by the visibility column.
  */
 ( function () {
 	'use strict';
@@ -35,12 +35,13 @@
 			return result;
 		}
 
-		var data;
-		try {
-			data = JSON.parse( source.textContent );
-		} catch ( e ) {
-			return result;
-		}
+		var data = {
+			enabled: '1' === source.dataset.enabled,
+			start_date: source.dataset.startDate || '',
+			start_time: source.dataset.startTime || '',
+			end_date: source.dataset.endDate || '',
+			end_time: source.dataset.endTime || ''
+		};
 
 		var toggle = row.querySelector( 'input[name="mscsv_enabled"]' );
 		if ( toggle ) {

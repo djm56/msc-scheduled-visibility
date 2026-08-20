@@ -48,11 +48,12 @@ class WooCommerce {
 			return;
 		}
 
-		// Keep scheduled products out of shop and product archives.
-		add_action( 'woocommerce_product_query', array( $this, 'filter_product_query' ) );
-
-		// Hide from shortcode/block product lists too.
-		add_filter( 'woocommerce_shortcode_products_query', array( $this, 'filter_shortcode_query' ) );
+		/*
+		 * Shop, archive, shortcode and block product lists are all WP_Query-backed, so
+		 * the module's `the_posts` pass already drops scheduled-out products from them.
+		 * The catalog-visibility and purchasability filters below cover the paths that
+		 * do not go through a post query at all.
+		 */
 
 		// A hidden product must not be buyable even if a direct link is followed.
 		add_filter( 'woocommerce_is_purchasable', array( $this, 'filter_is_purchasable' ), 10, 2 );
@@ -87,72 +88,6 @@ class WooCommerce {
 	}
 
 	/**
-	 * Exclude hidden products from the main WooCommerce product query.
-	 *
-	 * @param \WP_Query $query Product query.
-	 * @return void
-	 */
-	public function filter_product_query( $query ) {
-		if ( is_admin() || $this->module->can_bypass() ) {
-			return;
-		}
-
-		$meta_query = (array) $query->get( 'meta_query' );
-		$query->set( 'meta_query', $this->append_visibility_clause( $meta_query ) );
-	}
-
-	/**
-	 * Exclude hidden products from `[products]` shortcode and block queries.
-	 *
-	 * @param array<string,mixed> $args Query args.
-	 * @return array<string,mixed>
-	 */
-	public function filter_shortcode_query( $args ) {
-		if ( is_admin() || $this->module->can_bypass() ) {
-			return $args;
-		}
-
-		$meta_query = isset( $args['meta_query'] ) ? (array) $args['meta_query'] : array();
-
-		$args['meta_query'] = $this->append_visibility_clause( $meta_query );
-
-		return $args;
-	}
-
-	/**
-	 * Add the "unscheduled, or scheduled and currently visible" clause.
-	 *
-	 * @param array<mixed> $meta_query Existing meta query.
-	 * @return array<mixed>
-	 */
-	private function append_visibility_clause( $meta_query ) {
-		$meta_query[] = array(
-			'relation' => 'OR',
-			array(
-				'key'     => '_mscsv_enabled',
-				'compare' => 'NOT EXISTS',
-			),
-			array(
-				'key'   => '_mscsv_enabled',
-				'value' => '0',
-			),
-			array(
-				'relation' => 'AND',
-				array(
-					'key'   => '_mscsv_enabled',
-					'value' => '1',
-				),
-				array(
-					'key'   => '_mscsv_status',
-					'value' => 'visible',
-				),
-			),
-		);
-
-		return $meta_query;
-	}
-
-	/**
 	 * Prevent purchase of a product that is outside its visibility window.
 	 *
 	 * @param bool        $purchasable Current purchasability.
@@ -175,7 +110,7 @@ class WooCommerce {
 	 * @return bool
 	 */
 	public function filter_is_visible( $visible, $product_id ) {
-		if ( ! $visible || is_admin() || $this->module->can_bypass() ) {
+		if ( ! $visible || ! $this->module->is_visitor_facing_request() || $this->module->can_bypass() ) {
 			return $visible;
 		}
 

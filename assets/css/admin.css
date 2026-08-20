@@ -145,3 +145,7 @@
 .mscsv-endpoint-list code {
 	white-space: pre;
 }
+
+.mscsv-preview-section__hint {
+	margin-bottom: 8px;
+}

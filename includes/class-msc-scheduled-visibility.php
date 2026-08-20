@@ -118,20 +118,40 @@ class Plugin {
 	 * @return void
 	 */
 	public static function ensure_cron() {
-		// Register the custom interval so wp_schedule_event recognises it.
+		/*
+		 * Declared here as well as in Module::register_cron_schedule(): on the
+		 * activation request WordPress includes the plugin file and fires the
+		 * activation hook after `plugins_loaded` has already passed, so Module has not
+		 * been constructed and its filter is not registered. Without this,
+		 * wp_schedule_event() would be handed a recurrence WordPress does not know.
+		 * Keep the interval in step with the Module copy.
+		 */
 		add_filter(
-			'cron_schedules', // phpcs:ignore WordPress.WP.CronInterval.ChangeDetected -- 5 minutes is the documented granularity.
+			'cron_schedules',
 			static function ( $schedules ) {
-				$schedules['mscsv_five_minutes'] = array(
-					'interval' => 300,
-					'display'  => 'Every 5 Minutes',
+				$schedules[ Module::CRON_RECURRENCE ] = array(
+					'interval' => 900,
+					'display'  => 'Every 15 Minutes',
 				);
 				return $schedules;
 			}
 		);
 
-		if ( ! wp_next_scheduled( 'mscsv_cron_check' ) ) {
-			wp_schedule_event( time(), 'mscsv_five_minutes', 'mscsv_cron_check' );
+		/*
+		 * Releases up to 1.2.0 scheduled against a `mscsv_five_minutes` recurrence that
+		 * no longer exists. WordPress cannot work out the next run for a recurrence it
+		 * does not know, so such an event would fire once more and then stop repeating.
+		 * Clear it and reschedule on the current recurrence.
+		 */
+		$existing = wp_get_scheduled_event( 'mscsv_cron_check' );
+
+		if ( $existing && Module::CRON_RECURRENCE !== $existing->schedule ) {
+			wp_clear_scheduled_hook( 'mscsv_cron_check' );
+			$existing = false;
+		}
+
+		if ( ! $existing ) {
+			wp_schedule_event( time(), Module::CRON_RECURRENCE, 'mscsv_cron_check' );
 		}
 	}
 

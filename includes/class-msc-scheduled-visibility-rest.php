@@ -131,7 +131,15 @@ class REST {
 	 * @return bool|\WP_Error
 	 */
 	public function can_read_post( $request ) {
-		return $this->check_post_access( (int) $request['id'], 'read_post' );
+		/*
+		 * `edit_post`, not `read_post`. A schedule is editorial configuration — window,
+		 * recurrence pattern and the role allowlist — not public content. For a
+		 * published post `read_post` maps down to plain `read`, which every logged-in
+		 * Subscriber holds, so gating on it would let any subscriber enumerate the
+		 * embargo dates and role rules of the very content those rules hide from them.
+		 * This also matches the write routes, which already require `edit_post`.
+		 */
+		return $this->check_post_access( (int) $request['id'], 'edit_post' );
 	}
 
 	/**
@@ -169,6 +177,23 @@ class REST {
 	 * @return bool|\WP_Error
 	 */
 	private function check_post_access( $post_id, $capability ) {
+		/*
+		 * Authorize before disclosing anything about the ID. The 404 and 400 below
+		 * would otherwise answer two questions for an unauthenticated caller — does
+		 * this post exist, and is its post type scheduling-enabled — turning the route
+		 * into an ID enumeration oracle that also reports drafts and trashed posts,
+		 * which get_post() happily returns. Anyone who cannot edit posts at all gets a
+		 * single indistinguishable authorization error; past this point the caller is
+		 * an editor and the specific 404/400 responses are useful rather than leaky.
+		 */
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			return new \WP_Error(
+				'mscsv_forbidden',
+				__( 'You are not allowed to access this schedule.', 'msc-scheduled-visibility' ),
+				array( 'status' => rest_authorization_required_code() )
+			);
+		}
+
 		$post = get_post( $post_id );
 
 		if ( ! $post ) {
@@ -293,31 +318,44 @@ class REST {
 			$post_types = array( $requested_type );
 		}
 
-		$meta_query = array(
-			array(
-				'key'   => '_mscsv_enabled',
-				'value' => '1',
-			),
-		);
+		$status   = $request->get_param( 'status' );
+		$statuses = ( $status && 'any' !== $status ) ? array( $status ) : null;
 
-		$status = $request->get_param( 'status' );
-		if ( $status && 'any' !== $status ) {
-			$meta_query[] = array(
-				'key'   => '_mscsv_status',
-				'value' => $status,
+		$scheduled = $this->module->scheduled_post_ids( $statuses );
+
+		// No post holds the requested status.
+		if ( empty( $scheduled ) ) {
+			return rest_ensure_response(
+				array(
+					'items' => array(),
+					'total' => 0,
+					'pages' => 0,
+				)
 			);
 		}
 
-		$query = new \WP_Query(
-			array(
-				'post_type'      => $post_types,
-				'post_status'    => 'any',
-				'posts_per_page' => (int) $request->get_param( 'per_page' ),
-				'paged'          => (int) $request->get_param( 'page' ),
-				'meta_query'     => $meta_query,
-				'fields'         => 'ids',
-			)
+		$args = array(
+			'post_type'      => $post_types,
+			'post_status'    => 'any',
+			'posts_per_page' => (int) $request->get_param( 'per_page' ),
+			'paged'          => (int) $request->get_param( 'page' ),
+			'post__in'       => $scheduled,
+			'fields'         => 'ids',
 		);
+
+		/*
+		 * `post_status => 'any'` spans drafts, pending, private and future posts, and
+		 * applies no per-user restriction of its own. The route only requires
+		 * `edit_posts`, which a Contributor holds — so without this an author-level
+		 * account could read the titles, permalinks and embargo dates of everyone
+		 * else's unpublished content. Narrow to their own posts unless they are
+		 * actually entitled to see other people's.
+		 */
+		if ( ! current_user_can( 'edit_others_posts' ) ) {
+			$args['author'] = get_current_user_id();
+		}
+
+		$query = new \WP_Query( $args );
 
 		$items = array_map( array( $this, 'prepare_schedule' ), $query->posts );
 
