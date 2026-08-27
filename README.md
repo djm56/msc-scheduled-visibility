@@ -1,10 +1,10 @@
 # MSC Scheduled Visibility
 
-![Version](https://img.shields.io/badge/version-1.2.1-blue)
+![Version](https://img.shields.io/badge/version-1.2.2-blue)
 ![License](https://img.shields.io/badge/license-GPL--2.0%2B-green)
 ![PHP](https://img.shields.io/badge/PHP-7.4%2B-purple)
 ![WordPress](https://img.shields.io/badge/WordPress-5.9%2B-blue)
-![Tested up to](https://img.shields.io/badge/tested%20up%20to-7.0-blue)
+![Tested up to](https://img.shields.io/badge/tested%20up%20to-7.1-blue)
 
 Schedule posts, pages and products to appear and disappear between specific dates and times. Includes block-level scheduling, recurring schedules, and role-based visibility.
 
@@ -123,7 +123,7 @@ Users who can `edit_others_posts` bypass both so they can proof upcoming content
 
 | Constant | Value | Description |
 |----------|-------|-------------|
-| `MSCSV_PLUGIN_VERSION` | `'1.2.1'` | Current plugin version |
+| `MSCSV_PLUGIN_VERSION` | `'1.2.2'` | Current plugin version |
 | `MSCSV_PLUGIN_FILE` | `__FILE__` | Absolute path to main plugin file |
 | `MSCSV_PLUGIN_DIR` | Plugin directory path | Absolute path to plugin directory |
 | `MSCSV_PLUGIN_URL` | Plugin directory URL | URL to plugin directory |

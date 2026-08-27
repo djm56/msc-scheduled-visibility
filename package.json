@@ -1,6 +1,6 @@
 {
   "name": "msc-scheduled-visibility",
-  "version": "1.2.0",
+  "version": "1.2.2",
   "private": true,
   "scripts": {
     "build": "wp-scripts build src/block-scheduling/index.js --output-path=build",

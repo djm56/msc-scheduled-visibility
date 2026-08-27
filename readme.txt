@@ -2,9 +2,9 @@
 Contributors: djm56
 Tags: scheduling,visibility,content,blocks,recurring
 Requires at least: 5.9
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.2.1
+Stable tag: 1.2.2
 License: GPL-2.0+
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -57,6 +57,9 @@ The site timezone set under Settings > General.
 
 == Changelog ==
 
+= 1.2.2 =
+* Tested with WordPress 7.1. No functional changes.
+
 = 1.2.1 =
 * Preview bar CSS is now enqueued as a stylesheet instead of printed inline
 * Quick Edit row data moved from a JSON script element to data attributes
@@ -93,6 +96,9 @@ The site timezone set under Settings > General.
 * Initial release with full scheduling features.
 
 == Upgrade Notice ==
+
+= 1.2.2 =
+Compatibility update: confirmed tested against WordPress 7.1. No functional changes — safe update.
 
 = 1.2.0 =
 Important fixes: schedules were firing at the wrong time on any site not set to UTC, and block-level scheduling never worked. Also adds WooCommerce support, quick/bulk edit, preview, history and a REST API.

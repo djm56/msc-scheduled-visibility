@@ -2,6 +2,12 @@
 
 All notable changes to MSC Scheduled Visibility are documented in this file.
 
+## [1.2.2] - 2026-08-27
+
+### Changed
+
+- Confirmed compatibility with WordPress 7.1 — "Tested up to" header updated to 7.1. No functional changes.
+
 ## [1.2.1] - 2026-08-19
 
 ### Changed
