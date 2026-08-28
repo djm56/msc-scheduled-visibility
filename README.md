@@ -1,6 +1,6 @@
 # MSC Scheduled Visibility
 
-![Version](https://img.shields.io/badge/version-1.2.2-blue)
+![Version](https://img.shields.io/badge/version-1.2.3-blue)
 ![License](https://img.shields.io/badge/license-GPL--2.0%2B-green)
 ![PHP](https://img.shields.io/badge/PHP-7.4%2B-purple)
 ![WordPress](https://img.shields.io/badge/WordPress-5.9%2B-blue)
@@ -123,7 +123,7 @@ Users who can `edit_others_posts` bypass both so they can proof upcoming content
 
 | Constant | Value | Description |
 |----------|-------|-------------|
-| `MSCSV_PLUGIN_VERSION` | `'1.2.2'` | Current plugin version |
+| `MSCSV_PLUGIN_VERSION` | `'1.2.3'` | Current plugin version |
 | `MSCSV_PLUGIN_FILE` | `__FILE__` | Absolute path to main plugin file |
 | `MSCSV_PLUGIN_DIR` | Plugin directory path | Absolute path to plugin directory |
 | `MSCSV_PLUGIN_URL` | Plugin directory URL | URL to plugin directory |
@@ -273,6 +273,31 @@ composer lint-fix
 `npm run lint` and `npm run lint-fix` proxy to the Composer scripts above.
 
 ### Translations
+
+The plugin ships with 20 bundled language translations, all at 100% string coverage:
+
+| Locale | Language |
+|--------|----------|
+| `ar` | Arabic |
+| `de_CH` | Swiss German |
+| `de_DE` | German |
+| `es_ES` | Spanish (Spain) |
+| `es_MX` | Spanish (Mexico) |
+| `fr_CA` | French (Canada) |
+| `fr_FR` | French (France) |
+| `id_ID` | Indonesian |
+| `it_IT` | Italian |
+| `ja` | Japanese |
+| `nl_BE` | Dutch (Belgium) |
+| `nl_NL` | Dutch (Netherlands) |
+| `pl_PL` | Polish |
+| `pt_BR` | Portuguese (Brazil) |
+| `pt_PT` | Portuguese (Portugal) |
+| `ru_RU` | Russian |
+| `sv_SE` | Swedish |
+| `tr_TR` | Turkish |
+| `uk` | Ukrainian |
+| `zh_CN` | Chinese (Simplified) |
 
 - Translation files live in `languages/`.
 - The POT template is `languages/msc-scheduled-visibility.pot`.

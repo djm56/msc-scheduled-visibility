@@ -2,6 +2,10 @@
 
 All notable changes to MSC Scheduled Visibility are documented in this file.
 
+## [1.2.3] - 2026-08-27
+
+Added 8 new languages (Russian, Simplified Chinese, Turkish, Polish, Indonesian, Swedish, Ukrainian, Arabic) and refreshed all 20 bundled locales to 100% string coverage. Fixed JavaScript translation loading for the block editor sidebar (per-script .json translation files now generated).
+
 ## [1.2.2] - 2026-08-27
 
 ### Changed

@@ -1,0 +1,712 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: MSC Scheduled Visibility 1.2.3\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: Anomalous Developers <dev@anomalous.com.au>\n"
+"Language-Team: Russian <dev@anomalous.com.au>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-08-27T18:17:43+00:00\n"
+"PO-Revision-Date: 2026-08-27 20:30+00:00\n"
+"Language: ru_RU\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Domain: msc-scheduled-visibility\n"
+
+#. Plugin Name of the plugin
+#: msc-scheduled-visibility.php
+#: includes/class-msc-scheduled-visibility-settings.php:63
+#: includes/class-msc-scheduled-visibility-settings.php:64
+#: includes/class-msc-scheduled-visibility-settings.php:211
+msgid "MSC Scheduled Visibility"
+msgstr "MSC Scheduled Visibility"
+
+#. Plugin URI of the plugin
+#: msc-scheduled-visibility.php
+msgid "https://github.com/djm56/msc-scheduled-visibility"
+msgstr "https://github.com/djm56/msc-scheduled-visibility"
+
+#. Description of the plugin
+#: msc-scheduled-visibility.php
+msgid "Schedule posts and pages to appear and disappear between specific dates and times. Includes block-level scheduling, recurring schedules, role-based visibility, WooCommerce product scheduling, quick/bulk edit, schedule preview, history and a REST API."
+msgstr "Планируйте появление и исчезновение записей и страниц между определёнными датами и временем. Включает планирование на уровне блоков, повторяющиеся расписания, видимость по ролям, планирование товаров WooCommerce, быструю/массовую правку, предварительный просмотр расписания, историю и REST API."
+
+#. Author of the plugin
+#: msc-scheduled-visibility.php
+msgid "Anomalous Developers"
+msgstr "Anomalous Developers"
+
+#. Author URI of the plugin
+#: msc-scheduled-visibility.php
+msgid "https://anomalous.co.za"
+msgstr "https://anomalous.co.za"
+
+#: includes/class-msc-scheduled-visibility-audit-log.php:168
+#: includes/class-msc-scheduled-visibility-settings.php:102
+msgid "You do not have permission to access this page."
+msgstr "У вас нет прав для доступа к этой странице."
+
+#: includes/class-msc-scheduled-visibility-audit-log.php:239
+msgid "Scheduled task"
+msgstr "Запланированная задача"
+
+#: includes/class-msc-scheduled-visibility-audit-log.php:243
+#: includes/class-msc-scheduled-visibility-audit-log.php:252
+msgid "System"
+msgstr "Система"
+
+#: includes/class-msc-scheduled-visibility-module.php:362
+#: includes/class-msc-scheduled-visibility-module.php:1088
+#: includes/class-msc-scheduled-visibility-quick-edit.php:109
+#: includes/class-msc-scheduled-visibility-quick-edit.php:149
+msgid "Scheduled Visibility"
+msgstr "Запланированная видимость"
+
+#: includes/class-msc-scheduled-visibility-module.php:391
+#: includes/class-msc-scheduled-visibility-quick-edit.php:113
+#: includes/class-msc-scheduled-visibility-settings.php:282
+msgid "Enable scheduled visibility"
+msgstr "Включить запланированную видимость"
+
+#: includes/class-msc-scheduled-visibility-module.php:397
+msgid "Visible From"
+msgstr "Видимо с"
+
+#: includes/class-msc-scheduled-visibility-module.php:402
+msgid "Visible Until"
+msgstr "Видимо до"
+
+#: includes/class-msc-scheduled-visibility-module.php:408
+msgid "Status:"
+msgstr "Статус:"
+
+#: includes/class-msc-scheduled-visibility-module.php:458
+msgid "Sun"
+msgstr "Вс"
+
+#: includes/class-msc-scheduled-visibility-module.php:459
+msgid "Mon"
+msgstr "Пн"
+
+#: includes/class-msc-scheduled-visibility-module.php:460
+msgid "Tue"
+msgstr "Вт"
+
+#: includes/class-msc-scheduled-visibility-module.php:461
+msgid "Wed"
+msgstr "Ср"
+
+#: includes/class-msc-scheduled-visibility-module.php:462
+msgid "Thu"
+msgstr "Чт"
+
+#: includes/class-msc-scheduled-visibility-module.php:463
+msgid "Fri"
+msgstr "Пт"
+
+#: includes/class-msc-scheduled-visibility-module.php:464
+msgid "Sat"
+msgstr "Сб"
+
+#: includes/class-msc-scheduled-visibility-module.php:472
+msgid "Enable recurring schedule"
+msgstr "Включить повторяющееся расписание"
+
+#: includes/class-msc-scheduled-visibility-module.php:478
+msgid "Pattern:"
+msgstr "Шаблон:"
+
+#: includes/class-msc-scheduled-visibility-module.php:480
+msgid "Daily"
+msgstr "Ежедневно"
+
+#: includes/class-msc-scheduled-visibility-module.php:481
+msgid "Weekly"
+msgstr "Еженедельно"
+
+#: includes/class-msc-scheduled-visibility-module.php:482
+msgid "Monthly"
+msgstr "Ежемесячно"
+
+#: includes/class-msc-scheduled-visibility-module.php:487
+msgid "Days:"
+msgstr "Дни:"
+
+#: includes/class-msc-scheduled-visibility-module.php:497
+msgid "Day of month:"
+msgstr "День месяца:"
+
+#: includes/class-msc-scheduled-visibility-module.php:502
+msgid "Time window:"
+msgstr "Временное окно:"
+
+#: includes/class-msc-scheduled-visibility-module.php:504
+msgid "to"
+msgstr "до"
+
+#: includes/class-msc-scheduled-visibility-module.php:509
+msgid "Valid from:"
+msgstr "Действительно с:"
+
+#: includes/class-msc-scheduled-visibility-module.php:511
+msgid "until:"
+msgstr "до:"
+
+#: includes/class-msc-scheduled-visibility-module.php:541
+#: includes/class-msc-scheduled-visibility-settings.php:402
+msgid "Enable role-based visibility"
+msgstr "Включить видимость по ролям"
+
+#: includes/class-msc-scheduled-visibility-module.php:547
+msgid "Visible to:"
+msgstr "Видимо для:"
+
+#: includes/class-msc-scheduled-visibility-module.php:558
+msgid "Also visible to logged-out visitors"
+msgstr "Также видимо для гостей без авторизации"
+
+#: includes/class-msc-scheduled-visibility-module.php:899
+msgid "Choose a time or a role to preview."
+msgstr "Выберите время или роль для предпросмотра."
+
+#: includes/class-msc-scheduled-visibility-module.php:985
+#: includes/class-msc-scheduled-visibility-module.php:990
+msgid "Visibility"
+msgstr "Видимость"
+
+#: includes/class-msc-scheduled-visibility-module.php:1033
+#: includes/class-msc-scheduled-visibility-settings.php:80
+msgid "Recurring"
+msgstr "Повторяющееся"
+
+#: includes/class-msc-scheduled-visibility-module.php:1037
+msgid "Roles"
+msgstr "Роли"
+
+#: includes/class-msc-scheduled-visibility-module.php:1063
+msgid "Visible"
+msgstr "Видимо"
+
+#: includes/class-msc-scheduled-visibility-module.php:1064
+msgid "Scheduled"
+msgstr "Запланировано"
+
+#: includes/class-msc-scheduled-visibility-module.php:1065
+msgid "Hidden"
+msgstr "Скрыто"
+
+#: includes/class-msc-scheduled-visibility-module.php:1066
+msgid "Expired"
+msgstr "Истёк срок"
+
+#: includes/class-msc-scheduled-visibility-module.php:1102
+msgid "No post types are enabled for scheduling."
+msgstr "Ни один тип записей не включён для планирования."
+
+#: includes/class-msc-scheduled-visibility-module.php:1109
+#: includes/class-msc-scheduled-visibility-module.php:1131
+msgid "No posts with scheduled visibility."
+msgstr "Нет записей с запланированной видимостью."
+
+#: includes/class-msc-scheduled-visibility-module.php:1179
+#: includes/class-msc-scheduled-visibility-settings.php:578
+msgid "Post"
+msgstr "Запись"
+
+#: includes/class-msc-scheduled-visibility-module.php:1180
+msgid "Status"
+msgstr "Статус"
+
+#: includes/class-msc-scheduled-visibility-module.php:1181
+msgid "Next Change"
+msgstr "Следующее изменение"
+
+#. translators: %s: localised date and time.
+#: includes/class-msc-scheduled-visibility-module.php:1916
+#, php-format
+msgid "Shows: %s"
+msgstr "Показывается: %s"
+
+#. translators: %s: localised date and time.
+#: includes/class-msc-scheduled-visibility-module.php:1920
+#, php-format
+msgid "Hides: %s"
+msgstr "Скрывается: %s"
+
+#: includes/class-msc-scheduled-visibility-preview.php:251
+msgid "Preview schedule"
+msgstr "Предпросмотр расписания"
+
+#: includes/class-msc-scheduled-visibility-preview.php:253
+msgid "Open the front end as it will look at a chosen moment, or to a chosen role."
+msgstr "Открывает внешнюя часть так, как она будет выглядеть в выбранный момент или для выбранной роли."
+
+#: includes/class-msc-scheduled-visibility-preview.php:257
+msgid "At:"
+msgstr "В:"
+
+#: includes/class-msc-scheduled-visibility-preview.php:262
+msgid "As:"
+msgstr "Как:"
+
+#: includes/class-msc-scheduled-visibility-preview.php:264
+msgid "Current user"
+msgstr "Текущий пользователь"
+
+#: includes/class-msc-scheduled-visibility-preview.php:265
+#: includes/class-msc-scheduled-visibility-preview.php:322
+msgid "Logged-out visitor"
+msgstr "Гость без авторизации"
+
+#: includes/class-msc-scheduled-visibility-preview.php:281
+msgid "Open preview"
+msgstr "Открыть предпросмотр"
+
+#. translators: %s: localised date and time.
+#: includes/class-msc-scheduled-visibility-preview.php:313
+#, php-format
+msgid "Time: %s"
+msgstr "Время: %s"
+
+#. translators: %s: user role name.
+#: includes/class-msc-scheduled-visibility-preview.php:327
+#, php-format
+msgid "Viewing as: %s"
+msgstr "Просматривается как: %s"
+
+#: includes/class-msc-scheduled-visibility-preview.php:339
+msgid "Scheduled visibility preview"
+msgstr "Предпросмотр запланированной видимости"
+
+#: includes/class-msc-scheduled-visibility-preview.php:342
+msgid "Exit preview"
+msgstr "Выйти из предпросмотра"
+
+#: includes/class-msc-scheduled-visibility-quick-edit.php:118
+#: includes/class-msc-scheduled-visibility-quick-edit.php:162
+msgid "From"
+msgstr "С"
+
+#: includes/class-msc-scheduled-visibility-quick-edit.php:123
+#: includes/class-msc-scheduled-visibility-quick-edit.php:167
+msgid "Until"
+msgstr "До"
+
+#: includes/class-msc-scheduled-visibility-quick-edit.php:152
+msgid "Scheduling"
+msgstr "Планирование"
+
+#: includes/class-msc-scheduled-visibility-quick-edit.php:154
+msgid "— No change —"
+msgstr "— Без изменений —"
+
+#: includes/class-msc-scheduled-visibility-quick-edit.php:155
+msgid "Enable"
+msgstr "Включить"
+
+#: includes/class-msc-scheduled-visibility-quick-edit.php:156
+msgid "Disable (clear schedule)"
+msgstr "Отключить (очистить расписание)"
+
+#: includes/class-msc-scheduled-visibility-quick-edit.php:172
+msgid "Dates left blank are not changed. Choose \"Enable\" to apply these dates to every selected post."
+msgstr "Пустые даты не изменяются. Выберите «Включить», чтобы применить эти даты к каждой выбранной записи."
+
+#: includes/class-msc-scheduled-visibility-rest.php:164
+msgid "You are not allowed to list scheduled content."
+msgstr "У вас нет прав для просмотра списка запланированного содержимого."
+
+#: includes/class-msc-scheduled-visibility-rest.php:192
+#: includes/class-msc-scheduled-visibility-rest.php:218
+msgid "You are not allowed to access this schedule."
+msgstr "У вас нет прав для доступа к этому расписанию."
+
+#: includes/class-msc-scheduled-visibility-rest.php:202
+msgid "Post not found."
+msgstr "Запись не найдена."
+
+#: includes/class-msc-scheduled-visibility-rest.php:210
+msgid "Scheduling is not enabled for this post type."
+msgstr "Планирование не включено для этого типа записей."
+
+#: includes/class-msc-scheduled-visibility-rest.php:484
+msgid "Dates must use the YYYY-MM-DD format."
+msgstr "Даты должны использовать формат ГГГГ-ММ-ДД."
+
+#: includes/class-msc-scheduled-visibility-rest.php:506
+msgid "Times must use the 24-hour HH:MM format."
+msgstr "Время должно использовать 24-часовой формат ЧЧ:ММ."
+
+#: includes/class-msc-scheduled-visibility-settings.php:78
+#: includes/class-msc-scheduled-visibility-settings.php:444
+msgid "General"
+msgstr "Общие"
+
+#: includes/class-msc-scheduled-visibility-settings.php:79
+#: build/index.js:1
+#: src/block-scheduling/index.js:120
+#: src/block-scheduling/index.js:125
+msgid "Block Scheduling"
+msgstr "Планирование блоков"
+
+#: includes/class-msc-scheduled-visibility-settings.php:81
+msgid "Role-Based"
+msgstr "По ролям"
+
+#: includes/class-msc-scheduled-visibility-settings.php:85
+msgid "WooCommerce"
+msgstr "WooCommerce"
+
+#: includes/class-msc-scheduled-visibility-settings.php:88
+#: includes/class-msc-scheduled-visibility-settings.php:486
+#: includes/class-msc-scheduled-visibility-settings.php:558
+msgid "Advanced"
+msgstr "Дополнительно"
+
+#: includes/class-msc-scheduled-visibility-settings.php:89
+msgid "History"
+msgstr "История"
+
+#: includes/class-msc-scheduled-visibility-settings.php:90
+msgid "Support"
+msgstr "Поддержка"
+
+#: includes/class-msc-scheduled-visibility-settings.php:215
+msgid "Settings saved."
+msgstr "Настройки сохранены."
+
+#: includes/class-msc-scheduled-visibility-settings.php:286
+msgid "Allow posts to be shown or hidden on a schedule."
+msgstr "Разрешает показывать или скрывать записи по расписанию."
+
+#: includes/class-msc-scheduled-visibility-settings.php:291
+msgid "Post types"
+msgstr "Типы записей"
+
+#: includes/class-msc-scheduled-visibility-settings.php:302
+msgid "Select which post types can use scheduled visibility."
+msgstr "Выберите, какие типы записей могут использовать запланированную видимость."
+
+#: includes/class-msc-scheduled-visibility-settings.php:308
+#: includes/class-msc-scheduled-visibility-settings.php:343
+#: includes/class-msc-scheduled-visibility-settings.php:378
+#: includes/class-msc-scheduled-visibility-settings.php:413
+#: includes/class-msc-scheduled-visibility-settings.php:465
+#: includes/class-msc-scheduled-visibility-settings.php:536
+msgid "Save Settings"
+msgstr "Сохранить настройки"
+
+#: includes/class-msc-scheduled-visibility-settings.php:326
+#: includes/class-msc-scheduled-visibility-settings.php:638
+msgid "Block-Level Scheduling"
+msgstr "Планирование на уровне блоков"
+
+#: includes/class-msc-scheduled-visibility-settings.php:327
+msgid "Show or hide individual blocks within a post on a schedule. When enabled, a \"Block Scheduling\" sidebar panel will appear in the block editor."
+msgstr "Показывает или скрывает отдельные блоки в записи по расписанию. При включении в редакторе блоков появится боковая панель «Планирование блоков»."
+
+#: includes/class-msc-scheduled-visibility-settings.php:332
+msgid "Enable block scheduling"
+msgstr "Включить планирование блоков"
+
+#: includes/class-msc-scheduled-visibility-settings.php:336
+msgid "Allow per-block visibility scheduling in the block editor."
+msgstr "Разрешает планирование видимости для отдельных блоков в редакторе блоков."
+
+#: includes/class-msc-scheduled-visibility-settings.php:361
+#: includes/class-msc-scheduled-visibility-settings.php:641
+msgid "Recurring Schedules"
+msgstr "Повторяющиеся расписания"
+
+#: includes/class-msc-scheduled-visibility-settings.php:362
+msgid "Allow posts to be shown or hidden on a repeating schedule — daily, weekly, or monthly. When enabled, recurring options will appear in the post metabox."
+msgstr "Разрешает показывать или скрывать записи по повторяющемуся расписанию — ежедневно, еженедельно или ежемесячно. При включении в метабоксе записи появятся опции повторения."
+
+#: includes/class-msc-scheduled-visibility-settings.php:367
+msgid "Enable recurring schedules"
+msgstr "Включить повторяющиеся расписания"
+
+#: includes/class-msc-scheduled-visibility-settings.php:371
+msgid "Allow daily, weekly, or monthly visibility windows."
+msgstr "Разрешает дневные, недельные или месячные окна видимости."
+
+#: includes/class-msc-scheduled-visibility-settings.php:396
+#: includes/class-msc-scheduled-visibility-settings.php:644
+msgid "Role-Based Visibility"
+msgstr "Видимость по ролям"
+
+#: includes/class-msc-scheduled-visibility-settings.php:397
+msgid "Restrict content visibility by user role. When enabled, role selection options will appear in the post metabox."
+msgstr "Ограничивает видимость содержимого по ролям пользователей. При включении в метабоксе записи появятся опции выбора роли."
+
+#: includes/class-msc-scheduled-visibility-settings.php:406
+msgid "Allow restricting content visibility by user role."
+msgstr "Разрешает ограничивать видимость содержимого по ролям пользователей."
+
+#: includes/class-msc-scheduled-visibility-settings.php:432
+msgid "WooCommerce Products"
+msgstr "Товары WooCommerce"
+
+#: includes/class-msc-scheduled-visibility-settings.php:434
+msgid "Apply scheduled visibility to products. Hidden products are removed from the shop and product archives, cannot be purchased, and are dropped from the cart at checkout."
+msgstr "Применяет запланированную видимость к товарам. Скрытые товары удаляются из магазина и архивов товаров, их нельзя купить, и они исключаются из корзины при оформлении заказа."
+
+#. translators: %s: link to the General tab.
+#: includes/class-msc-scheduled-visibility-settings.php:443
+#, php-format
+msgid "Add the Product post type on the %s tab before product scheduling can take effect."
+msgstr "Добавьте тип записей Продукт на вкладке %s, чтобы планирование товаров вступило в силу."
+
+#: includes/class-msc-scheduled-visibility-settings.php:454
+msgid "Enable product scheduling"
+msgstr "Включить планирование товаров"
+
+#: includes/class-msc-scheduled-visibility-settings.php:458
+msgid "Hide scheduled-out products from the shop and block their purchase."
+msgstr "Скрывает просроченные товары в магазине и блокирует их покупку."
+
+#: includes/class-msc-scheduled-visibility-settings.php:491
+msgid "Schedule preview"
+msgstr "Предпросмотр расписания"
+
+#: includes/class-msc-scheduled-visibility-settings.php:495
+msgid "Let editors view the front end at a chosen time or as a chosen role."
+msgstr "Позволяет редакторам просматривать внешнюю часть в выбранное время или в качестве выбранной роли."
+
+#: includes/class-msc-scheduled-visibility-settings.php:497
+msgid "Adds a \"Preview schedule\" control to the post metabox. Preview links are signed and only work for users who can edit others' posts."
+msgstr "Добавляет элемент управления «Предпросмотр расписания» в метабокс записи. Ссылки предпросмотра подписаны и работают только для пользователей, могущих редактировать чужие записи."
+
+#: includes/class-msc-scheduled-visibility-settings.php:501
+msgid "Visibility history"
+msgstr "История видимости"
+
+#: includes/class-msc-scheduled-visibility-settings.php:505
+msgid "Record every time a post is shown or hidden."
+msgstr "Записывает каждый случай, когда запись показывается или скрывается."
+
+#: includes/class-msc-scheduled-visibility-settings.php:508
+msgid "Entries to keep:"
+msgstr "Сохранять записей:"
+
+#: includes/class-msc-scheduled-visibility-settings.php:514
+msgid "REST API"
+msgstr "REST API"
+
+#: includes/class-msc-scheduled-visibility-settings.php:518
+msgid "Expose scheduling endpoints under /wp-json/mscsv/v1/."
+msgstr "Предоставляет конечные точки планирования под /wp-json/mscsv/v1/."
+
+#: includes/class-msc-scheduled-visibility-settings.php:521
+msgid "Endpoints require an authenticated user with edit rights on the post concerned."
+msgstr "Конечные точки требуют авторизованного пользователя с правами редактирования соответствующей записи."
+
+#: includes/class-msc-scheduled-visibility-settings.php:549
+msgid "Visibility History"
+msgstr "История видимости"
+
+#. translators: %s: link to the Advanced tab.
+#: includes/class-msc-scheduled-visibility-settings.php:557
+#, php-format
+msgid "History recording is switched off. Enable it on the %s tab."
+msgstr "Запись истории отключена. Включите её на вкладке %s."
+
+#: includes/class-msc-scheduled-visibility-settings.php:566
+msgid "No visibility changes recorded yet."
+msgstr "Изменения видимости ещё не записаны."
+
+#: includes/class-msc-scheduled-visibility-settings.php:571
+msgid "Most recent changes first. Only transitions are recorded — a post that stays in the same state produces no entry."
+msgstr "Сначала показываются самые последние изменения. Записываются только переходы — запись, остающаяся в том же состоянии, не создаёт записи."
+
+#: includes/class-msc-scheduled-visibility-settings.php:577
+msgid "When"
+msgstr "Когда"
+
+#: includes/class-msc-scheduled-visibility-settings.php:579
+msgid "Change"
+msgstr "Изменение"
+
+#: includes/class-msc-scheduled-visibility-settings.php:580
+msgid "Triggered by"
+msgstr "Инициировано"
+
+#: includes/class-msc-scheduled-visibility-settings.php:589
+msgid "(no title)"
+msgstr "(без заголовка)"
+
+#: includes/class-msc-scheduled-visibility-settings.php:618
+msgid "Clear history"
+msgstr "Очистить историю"
+
+#: includes/class-msc-scheduled-visibility-settings.php:632
+msgid "How to Use Scheduled Visibility"
+msgstr "Как использовать запланированную видимость"
+
+#: includes/class-msc-scheduled-visibility-settings.php:633
+msgid "Scheduled Visibility allows you to automatically show or hide posts between specific dates and times without changing their publish status."
+msgstr "Запланированная видимость позволяет автоматически показывать или скрывать записи между определёнными датами и временем без изменения их статуса публикации."
+
+#: includes/class-msc-scheduled-visibility-settings.php:635
+msgid "Basic Scheduling"
+msgstr "Базовое планирование"
+
+#: includes/class-msc-scheduled-visibility-settings.php:636
+msgid "When editing a post or page, look for the \"Scheduled Visibility\" metabox in the sidebar. Enable scheduling and set the \"Visible From\" and \"Visible Until\" dates and times."
+msgstr "При редактировании записи или страницы найдите метабокс «Scheduled Visibility» в боковой панели. Включите планирование и установите даты и время «Видимо с» и «Видимо до»."
+
+#: includes/class-msc-scheduled-visibility-settings.php:639
+msgid "In the block editor, open the \"Block Scheduling\" sidebar panel to set visibility schedules for individual blocks within a post."
+msgstr "В редакторе блоков откройте боковую панель «Планирование блоков», чтобы задать расписания видимости для отдельных блоков в записи."
+
+#: includes/class-msc-scheduled-visibility-settings.php:642
+msgid "Enable recurring visibility in the metabox to make content appear on a daily, weekly, or monthly pattern within a specified time window."
+msgstr "Включите повторяющуюся видимость в метабоксе, чтобы содержимое появлялось по дневному, недельному или месячному шаблону в заданном временном окне."
+
+#: includes/class-msc-scheduled-visibility-settings.php:645
+msgid "Restrict content to specific user roles. Select which roles can see the content, and optionally allow logged-out visitors to see it."
+msgstr "Ограничьте доступ к содержимому для определённых ролей пользователей. Выберите, какие роли могут видеть содержимое, и при желании разрешите гостям без авторизации видеть его."
+
+#: includes/class-msc-scheduled-visibility-settings.php:647
+msgid "Quick Edit and Bulk Edit"
+msgstr "Быстрая и массовая правка"
+
+#: includes/class-msc-scheduled-visibility-settings.php:648
+msgid "Schedules can be set without opening a post. Use Quick Edit on a single row, or select several posts and use Bulk Edit to apply the same window to all of them."
+msgstr "Расписания можно задавать без открытия записи. Используйте быструю правку для одной строки или выберите несколько записей и используйте массовую правку, чтобы применить одно окно ко всем."
+
+#: includes/class-msc-scheduled-visibility-settings.php:650
+msgid "Previewing a schedule"
+msgstr "Предпросмотр расписания"
+
+#: includes/class-msc-scheduled-visibility-settings.php:651
+msgid "The \"Preview schedule\" control in the post metabox opens the front end as it will appear at a moment you choose, or to a role you choose. Nothing is saved — the simulation lasts for that one page view."
+msgstr "Элемент «Предпросмотр расписания» в метабоксе записи открывает внешнюю часть так, как она будет выглядеть в момент, который вы выберете, или для роли, которую вы выберете. Ничего не сохраняется — симуляция длится только на этот просмотр страницы."
+
+#: includes/class-msc-scheduled-visibility-settings.php:653
+msgid "Frequently Asked Questions"
+msgstr "Часто задаваемые вопросы"
+
+#: includes/class-msc-scheduled-visibility-settings.php:655
+msgid "The metabox is not showing on my posts."
+msgstr "Метабокс не отображается на моих записях."
+
+#: includes/class-msc-scheduled-visibility-settings.php:657
+msgid "Check that \"Enable scheduled visibility\" is ticked on the General tab."
+msgstr "Проверьте, что «Включить запланированную видимость» отмечено на вкладке Общие."
+
+#: includes/class-msc-scheduled-visibility-settings.php:658
+msgid "Check that the post type is selected in the Post types list."
+msgstr "Проверьте, что тип записей выбран в списке Типы записей."
+
+#: includes/class-msc-scheduled-visibility-settings.php:659
+msgid "The metabox appears in the sidebar when editing a post."
+msgstr "Метабокс появляется в боковой панели при редактировании записи."
+
+#: includes/class-msc-scheduled-visibility-settings.php:662
+msgid "When does the visibility change occur?"
+msgstr "Когда происходит изменение видимости?"
+
+#: includes/class-msc-scheduled-visibility-settings.php:663
+msgid "Visibility changes are processed by WordPress scheduled events (cron) every 15 minutes, which is what keeps the status shown in admin listings current. Visitors never see stale content in the meantime — the schedule is also checked live on every page view."
+msgstr "Изменения видимости обрабатываются запланированными событиями WordPress (cron) каждые 15 минут, что удерживает статус в списках администратора актуальным. Посетители никогда не видят устаревшее содержимое в это время — расписание также проверяется в реальном времени при каждом просмотре страницы."
+
+#: includes/class-msc-scheduled-visibility-settings.php:665
+msgid "Why can I still see a hidden post?"
+msgstr "Почему я всё ещё вижу скрытую запись?"
+
+#: includes/class-msc-scheduled-visibility-settings.php:666
+msgid "Users who can edit other people's posts bypass scheduling so they can proof upcoming content. Use the preview control, or view the site logged out, to see what visitors get."
+msgstr "Пользователи, могущие редактировать чужие записи, обходят расписание, чтобы просматривать предстоящее содержимое. Используйте элемент предпросмотра или просматривайте сайт без авторизации, чтобы увидеть, что получают посетители."
+
+#: includes/class-msc-scheduled-visibility-settings.php:670
+msgid "Diagnostics"
+msgstr "Диагностика"
+
+#: includes/class-msc-scheduled-visibility-settings.php:675
+msgid "Need Help?"
+msgstr "Нужна помощь?"
+
+#: includes/class-msc-scheduled-visibility-settings.php:676
+msgid "If you have questions, encounter bugs, or need setup assistance, we're here to help."
+msgstr "Если у вас есть вопросы, вы столкнулись с ошибками или вам нужна помощь в настройке, мы готовы помочь."
+
+#: includes/class-msc-scheduled-visibility-settings.php:679
+msgid "Get Support"
+msgstr "Получить поддержку"
+
+#: includes/class-msc-scheduled-visibility-settings.php:698
+msgid "Plugin version"
+msgstr "Версия плагина"
+
+#: includes/class-msc-scheduled-visibility-settings.php:699
+msgid "WordPress version"
+msgstr "Версия WordPress"
+
+#: includes/class-msc-scheduled-visibility-settings.php:700
+msgid "PHP version"
+msgstr "Версия PHP"
+
+#: includes/class-msc-scheduled-visibility-settings.php:701
+msgid "Site timezone"
+msgstr "Часовой пояс сайта"
+
+#: includes/class-msc-scheduled-visibility-settings.php:702
+msgid "Site time now"
+msgstr "Текущее время сайта"
+
+#: includes/class-msc-scheduled-visibility-settings.php:703
+msgid "Enabled post types"
+msgstr "Включённые типы записей"
+
+#: includes/class-msc-scheduled-visibility-settings.php:703
+msgid "None"
+msgstr "Нет"
+
+#: includes/class-msc-scheduled-visibility-settings.php:707
+#: includes/class-msc-scheduled-visibility-settings.php:714
+msgid "Next scheduled check"
+msgstr "Следующая запланированная проверка"
+
+#. translators: 1: formatted date and time, 2: human-readable interval.
+#: includes/class-msc-scheduled-visibility-settings.php:709
+#, php-format
+msgid "%1$s (in %2$s)"
+msgstr "%1$s (через %2$s)"
+
+#: includes/class-msc-scheduled-visibility-settings.php:714
+msgid "Not scheduled — deactivate and reactivate the plugin."
+msgstr "Не запланировано — деактивируйте и повторно активируйте плагин."
+
+#: includes/class-msc-scheduled-visibility-settings.php:718
+msgid "WP-Cron"
+msgstr "WP-Cron"
+
+#: includes/class-msc-scheduled-visibility-settings.php:718
+msgid "Disabled by DISABLE_WP_CRON — make sure a system cron calls wp-cron.php."
+msgstr "Отключено через DISABLE_WP_CRON — убедитесь, что системный cron вызывает wp-cron.php."
+
+#: includes/class-msc-scheduled-visibility-settings.php:721
+msgid "Scheduled posts"
+msgstr "Запланированные записи"
+
+#. translators: 1: visible count, 2: upcoming count, 3: hidden count, 4:
+#. expired count.
+#: includes/class-msc-scheduled-visibility-settings.php:723
+#, php-format
+msgid "%1$d visible, %2$d upcoming, %3$d hidden, %4$d expired"
+msgstr "%1$d видимо, %2$d предстоит, %3$d скрыто, %4$d истёк срок"
+
+#. translators: %s: product name.
+#: includes/class-msc-scheduled-visibility-woocommerce.php:140
+#, php-format
+msgid "\"%s\" is no longer available and has been removed from your cart."
+msgstr "«%s» больше недоступен и был удалён из вашей корзины."
+
+#: includes/class-msc-scheduled-visibility-woocommerce.php:163
+msgid "This product is not currently available."
+msgstr "Этот товар в настоящее время недоступен."
+
+#: msc-scheduled-visibility.php:83
+msgid "Settings"
+msgstr "Настройки"

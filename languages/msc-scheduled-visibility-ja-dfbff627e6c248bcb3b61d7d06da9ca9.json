@@ -1,0 +1,39 @@
+{
+    "translation-revision-date": "2026-08-27 20:30+00:00",
+    "generator": "WP-CLI\/2.12.0",
+    "source": "build\/index.js",
+    "domain": "messages",
+    "locale_data": {
+        "messages": {
+            "": {
+                "domain": "messages",
+                "lang": "ja",
+                "plural-forms": "nplurals=1; plural=0;"
+            },
+            "Block Scheduling": [
+                "\u30d6\u30ed\u30c3\u30af\u30b9\u30b1\u30b8\u30e5\u30fc\u30eb"
+            ],
+            "Select a block to configure its visibility schedule.": [
+                "\u53ef\u8996\u6027\u30b9\u30b1\u30b8\u30e5\u30fc\u30eb\u3092\u8a2d\u5b9a\u3059\u308b\u30d6\u30ed\u30c3\u30af\u3092\u9078\u629e\u3057\u3066\u304f\u3060\u3055\u3044\u3002"
+            ],
+            "Enable schedule for this block": [
+                "\u3053\u306e\u30d6\u30ed\u30c3\u30af\u306e\u30b9\u30b1\u30b8\u30e5\u30fc\u30eb\u3092\u6709\u52b9\u5316"
+            ],
+            "Visible from (date)": [
+                "\u8868\u793a\u958b\u59cb\uff08\u65e5\u4ed8\uff09"
+            ],
+            "Visible from (time)": [
+                "\u8868\u793a\u958b\u59cb\uff08\u6642\u9593\uff09"
+            ],
+            "Visible until (date)": [
+                "\u8868\u793a\u7d42\u4e86\uff08\u65e5\u4ed8\uff09"
+            ],
+            "Visible until (time)": [
+                "\u8868\u793a\u7d42\u4e86\uff08\u6642\u9593\uff09"
+            ],
+            "All Block Schedules": [
+                "\u3059\u3079\u3066\u306e\u30d6\u30ed\u30c3\u30af\u30b9\u30b1\u30b8\u30e5\u30fc\u30eb"
+            ]
+        }
+    }
+}

@@ -4,7 +4,7 @@ Tags: scheduling,visibility,content,blocks,recurring
 Requires at least: 5.9
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.2.2
+Stable tag: 1.2.3
 License: GPL-2.0+
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -57,6 +57,10 @@ The site timezone set under Settings > General.
 
 == Changelog ==
 
+= 1.2.3 =
+* Added 8 new languages: Russian, Simplified Chinese, Turkish, Polish, Indonesian, Swedish, Ukrainian, Arabic. All 20 bundled locales now at 100% string coverage.
+* Fixed JavaScript translation loading for the block editor sidebar — per-script `.json` translation files are now generated and shipped with the plugin.
+
 = 1.2.2 =
 * Tested with WordPress 7.1. No functional changes.
 
@@ -96,6 +100,9 @@ The site timezone set under Settings > General.
 * Initial release with full scheduling features.
 
 == Upgrade Notice ==
+
+= 1.2.3 =
+Adds 8 new languages (now 20 total at 100% string coverage) and fixes JavaScript translation loading for the block editor sidebar. Recommended update for any site using the block editor in a non-English locale.
 
 = 1.2.2 =
 Compatibility update: confirmed tested against WordPress 7.1. No functional changes — safe update.

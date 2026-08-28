@@ -5,7 +5,7 @@
  * Plugin Name: MSC Scheduled Visibility
  * Plugin URI: https://github.com/djm56/msc-scheduled-visibility
  * Description: Schedule posts and pages to appear and disappear between specific dates and times. Includes block-level scheduling, recurring schedules, role-based visibility, WooCommerce product scheduling, quick/bulk edit, schedule preview, history and a REST API.
- * Version: 1.2.2
+ * Version: 1.2.3
  * Author: Anomalous Developers
  * Author URI: https://anomalous.co.za
  * Text Domain: msc-scheduled-visibility
@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Current plugin version.
  */
-define( 'MSCSV_PLUGIN_VERSION', '1.2.2' );
+define( 'MSCSV_PLUGIN_VERSION', '1.2.3' );
 
 /**
  * Absolute path to the main plugin file.
