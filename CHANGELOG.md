@@ -2,6 +2,16 @@
 
 All notable changes to MSC Scheduled Visibility are documented in this file.
 
+## [1.2.4] - 2026-08-28
+
+### Fixed
+
+- Admin styles (`assets/css/admin.css`) now load correctly on the Settings page — `.msc-admin-card`, `.mscv-badge--*`, `.mscv-history-table`, `.mscv-diagnostics`, and `.mscv-endpoint-list` were rendering unstyled because the asset was only enqueued on `post.php`/`post-new.php`.
+
+### Improved
+
+- Accessibility on the Settings page — added `scope="col"` to History table headers, converted Diagnostics key cells to `<th scope="row">`, added a `<legend>` to the post-type `<fieldset>`, and wired `aria-describedby` on controls that already had a corresponding `.description` paragraph (preview, REST API, post-types fieldset).
+
 ## [1.2.3] - 2026-08-27
 
 Added 8 new languages (Russian, Simplified Chinese, Turkish, Polish, Indonesian, Swedish, Ukrainian, Arabic) and refreshed all 20 bundled locales to 100% string coverage. Fixed JavaScript translation loading for the block editor sidebar (per-script .json translation files now generated).

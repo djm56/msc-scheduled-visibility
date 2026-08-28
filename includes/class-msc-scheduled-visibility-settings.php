@@ -51,6 +51,32 @@ class Settings {
 
 		add_action( 'admin_menu', array( $this, 'register_menu' ) );
 		add_action( 'admin_post_mscsv_save_settings', array( $this, 'handle_save' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_assets' ) );
+	}
+
+	/**
+	 * Enqueue admin assets on the MSC Scheduled Visibility settings page.
+	 *
+	 * Mirrors the handle/path/version used by Module::enqueue_admin_assets(), but
+	 * limited to the stylesheet: the block editor JS bundle is post-editor-only
+	 * and must not load on the settings screen.
+	 *
+	 * @since 1.2.4
+	 *
+	 * @param string $hook_suffix Current admin page hook suffix.
+	 * @return void
+	 */
+	public function enqueue_admin_assets( $hook_suffix ) {
+		if ( 'settings_page_mscsv-settings' !== $hook_suffix ) {
+			return;
+		}
+
+		wp_enqueue_style(
+			'mscsv-admin',
+			MSCSV_PLUGIN_URL . 'assets/css/admin.css',
+			array(),
+			MSCSV_PLUGIN_VERSION
+		);
 	}
 
 	/**
@@ -290,7 +316,8 @@ class Settings {
 					<tr>
 						<th scope="row"><?php esc_html_e( 'Post types', 'msc-scheduled-visibility' ); ?></th>
 						<td>
-							<fieldset>
+							<fieldset aria-describedby="mscsv-post-types-description">
+								<legend class="screen-reader-text"><?php esc_html_e( 'Post types', 'msc-scheduled-visibility' ); ?></legend>
 								<?php foreach ( $available_post_types as $pt_obj ) : ?>
 									<label style="display:block;margin-bottom:4px;">
 										<input type="checkbox" name="post_types[]" value="<?php echo esc_attr( $pt_obj->name ); ?>" <?php checked( in_array( $pt_obj->name, $options['post_types'], true ) ); ?> />
@@ -299,7 +326,7 @@ class Settings {
 									</label>
 								<?php endforeach; ?>
 							</fieldset>
-							<p class="description"><?php esc_html_e( 'Select which post types can use scheduled visibility.', 'msc-scheduled-visibility' ); ?></p>
+							<p id="mscsv-post-types-description" class="description"><?php esc_html_e( 'Select which post types can use scheduled visibility.', 'msc-scheduled-visibility' ); ?></p>
 						</td>
 					</tr>
 				</tbody>
@@ -491,10 +518,10 @@ class Settings {
 						<th scope="row"><?php esc_html_e( 'Schedule preview', 'msc-scheduled-visibility' ); ?></th>
 						<td>
 							<label for="preview_enabled">
-								<input id="preview_enabled" type="checkbox" name="preview_enabled" value="1" <?php checked( 1, $preview_enabled ); ?> />
+								<input id="preview_enabled" type="checkbox" name="preview_enabled" value="1" aria-describedby="mscsv-preview-description" <?php checked( 1, $preview_enabled ); ?> />
 								<?php esc_html_e( 'Let editors view the front end at a chosen time or as a chosen role.', 'msc-scheduled-visibility' ); ?>
 							</label>
-							<p class="description"><?php esc_html_e( 'Adds a "Preview schedule" control to the post metabox. Preview links are signed and only work for users who can edit others\' posts.', 'msc-scheduled-visibility' ); ?></p>
+							<p id="mscsv-preview-description" class="description"><?php esc_html_e( 'Adds a "Preview schedule" control to the post metabox. Preview links are signed and only work for users who can edit others\' posts.', 'msc-scheduled-visibility' ); ?></p>
 						</td>
 					</tr>
 					<tr>
@@ -514,10 +541,10 @@ class Settings {
 						<th scope="row"><?php esc_html_e( 'REST API', 'msc-scheduled-visibility' ); ?></th>
 						<td>
 							<label for="rest_enabled">
-								<input id="rest_enabled" type="checkbox" name="rest_enabled" value="1" <?php checked( 1, $rest_enabled ); ?> />
+								<input id="rest_enabled" type="checkbox" name="rest_enabled" value="1" aria-describedby="mscsv-rest-description" <?php checked( 1, $rest_enabled ); ?> />
 								<?php esc_html_e( 'Expose scheduling endpoints under /wp-json/mscsv/v1/.', 'msc-scheduled-visibility' ); ?>
 							</label>
-							<p class="description">
+							<p id="mscsv-rest-description" class="description">
 								<?php esc_html_e( 'Endpoints require an authenticated user with edit rights on the post concerned.', 'msc-scheduled-visibility' ); ?>
 							</p>
 							<?php if ( $rest_enabled ) : ?>
@@ -574,10 +601,10 @@ class Settings {
 		<table class="widefat striped mscsv-history-table">
 			<thead>
 				<tr>
-					<th><?php esc_html_e( 'When', 'msc-scheduled-visibility' ); ?></th>
-					<th><?php esc_html_e( 'Post', 'msc-scheduled-visibility' ); ?></th>
-					<th><?php esc_html_e( 'Change', 'msc-scheduled-visibility' ); ?></th>
-					<th><?php esc_html_e( 'Triggered by', 'msc-scheduled-visibility' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'When', 'msc-scheduled-visibility' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Post', 'msc-scheduled-visibility' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Change', 'msc-scheduled-visibility' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Triggered by', 'msc-scheduled-visibility' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -731,7 +758,7 @@ class Settings {
 			<tbody>
 				<?php foreach ( $rows as $label => $value ) : ?>
 					<tr>
-						<td style="width:220px;"><strong><?php echo esc_html( $label ); ?></strong></td>
+						<th scope="row" style="width:220px;"><strong><?php echo esc_html( $label ); ?></strong></th>
 						<td><?php echo esc_html( $value ); ?></td>
 					</tr>
 				<?php endforeach; ?>

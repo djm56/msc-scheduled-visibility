@@ -4,7 +4,7 @@ Tags: scheduling,visibility,content,blocks,recurring
 Requires at least: 5.9
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.2.3
+Stable tag: 1.2.4
 License: GPL-2.0+
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -57,6 +57,10 @@ The site timezone set under Settings > General.
 
 == Changelog ==
 
+= 1.2.4 =
+* Fixed: Admin styles now load correctly on the Settings page (status badges, tables, and cards were rendering unstyled).
+* Improved: Accessibility — added table header scope attributes, fieldset legends, and ARIA descriptions on the Settings page.
+
 = 1.2.3 =
 * Added 8 new languages: Russian, Simplified Chinese, Turkish, Polish, Indonesian, Swedish, Ukrainian, Arabic. All 20 bundled locales now at 100% string coverage.
 * Fixed JavaScript translation loading for the block editor sidebar — per-script `.json` translation files are now generated and shipped with the plugin.
@@ -100,6 +104,9 @@ The site timezone set under Settings > General.
 * Initial release with full scheduling features.
 
 == Upgrade Notice ==
+
+= 1.2.4 =
+Fixes unstyled rendering on the Settings page (status badges, tables, and cards) and improves accessibility on that page. Recommended update for all sites.
 
 = 1.2.3 =
 Adds 8 new languages (now 20 total at 100% string coverage) and fixes JavaScript translation loading for the block editor sidebar. Recommended update for any site using the block editor in a non-English locale.
