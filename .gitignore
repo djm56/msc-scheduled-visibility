@@ -10,5 +10,8 @@ coverage/
 .DS_Store
 ._*
 
+# Security scan reports (never committed)
+/scan-reports/
+
 # Build output is deliberately NOT ignored: scripts/package.sh excludes /src/ from
 # the distribution zip, so the compiled editor bundle in /build/ has to be committed.

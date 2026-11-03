@@ -1,0 +1,145 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Left side of && is always true\.$#'
+			identifier: booleanAnd.leftAlwaysTrue
+			count: 1
+			path: includes/class-msc-scheduled-visibility-audit-log.php
+
+		-
+			message: '#^Right side of && is always true\.$#'
+			identifier: booleanAnd.rightAlwaysTrue
+			count: 1
+			path: includes/class-msc-scheduled-visibility-audit-log.php
+
+		-
+			message: '#^Call to function is_numeric\(\) with WP_Post will always evaluate to false\.$#'
+			identifier: function.impossibleType
+			count: 1
+			path: includes/class-msc-scheduled-visibility-module.php
+
+		-
+			message: '#^Constant MSCSV_PLUGIN_DIR not found\.$#'
+			identifier: constant.notFound
+			count: 3
+			path: includes/class-msc-scheduled-visibility-module.php
+
+		-
+			message: '#^Constant MSCSV_PLUGIN_URL not found\.$#'
+			identifier: constant.notFound
+			count: 3
+			path: includes/class-msc-scheduled-visibility-module.php
+
+		-
+			message: '#^Parameter \#1 \$array_arg of function usort contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: includes/class-msc-scheduled-visibility-module.php
+
+		-
+			message: '#^Parameter \#1 \$text of function esc_attr expects string, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: includes/class-msc-scheduled-visibility-module.php
+
+		-
+			message: '#^Parameter \#2 \$callback of function usort contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: includes/class-msc-scheduled-visibility-module.php
+
+		-
+			message: '#^Property WP_Post\:\:\$ID \(int\<0, max\>\) in isset\(\) is not nullable\.$#'
+			identifier: isset.property
+			count: 1
+			path: includes/class-msc-scheduled-visibility-module.php
+
+		-
+			message: '#^Right side of && is always true\.$#'
+			identifier: booleanAnd.rightAlwaysTrue
+			count: 1
+			path: includes/class-msc-scheduled-visibility-module.php
+
+		-
+			message: '#^Constant MSCSV_PLUGIN_URL not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: includes/class-msc-scheduled-visibility-preview.php
+
+		-
+			message: '#^Constant MSCSV_PLUGIN_URL not found\.$#'
+			identifier: constant.notFound
+			count: 2
+			path: includes/class-msc-scheduled-visibility-quick-edit.php
+
+		-
+			message: '#^Instanceof between WP_Post and WP_Post will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: includes/class-msc-scheduled-visibility-quick-edit.php
+
+		-
+			message: '#^Parameter \#2 \$value of method WP_HTTP_Response\:\:header\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: includes/class-msc-scheduled-visibility-rest.php
+
+		-
+			message: '#^Constant MSCSV_PLUGIN_URL not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: includes/class-msc-scheduled-visibility-settings.php
+
+		-
+			message: '#^Parameter \#1 \$text of function esc_attr expects string, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: includes/class-msc-scheduled-visibility-settings.php
+
+		-
+			message: '#^Call to function is_object\(\) with WC_Product will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: includes/class-msc-scheduled-visibility-woocommerce.php
+
+		-
+			message: '#^Call to method get_id\(\) on an unknown class WC_Product\.$#'
+			identifier: class.notFound
+			count: 1
+			path: includes/class-msc-scheduled-visibility-woocommerce.php
+
+		-
+			message: '#^Function wc_add_notice not found\.$#'
+			identifier: function.notFound
+			count: 1
+			path: includes/class-msc-scheduled-visibility-woocommerce.php
+
+		-
+			message: '#^Parameter \$product of method MSC_Scheduled_Visibility\\WooCommerce\:\:filter_is_purchasable\(\) has invalid type WC_Product\.$#'
+			identifier: class.notFound
+			count: 1
+			path: includes/class-msc-scheduled-visibility-woocommerce.php
+
+		-
+			message: '#^Property MSC_Scheduled_Visibility\\Plugin\:\:\$preview is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: includes/class-msc-scheduled-visibility.php
+
+		-
+			message: '#^Property MSC_Scheduled_Visibility\\Plugin\:\:\$quick_edit is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: includes/class-msc-scheduled-visibility.php
+
+		-
+			message: '#^Property MSC_Scheduled_Visibility\\Plugin\:\:\$rest is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: includes/class-msc-scheduled-visibility.php
+
+		-
+			message: '#^Property MSC_Scheduled_Visibility\\Plugin\:\:\$settings is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: includes/class-msc-scheduled-visibility.php
