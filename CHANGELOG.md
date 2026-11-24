@@ -2,6 +2,21 @@
 
 All notable changes to MSC Scheduled Visibility are documented in this file.
 
+## [1.2.5] - 2026-11-05
+
+### Fixed
+
+- Scheduling guard logic — post-shape handling reordered so `WP_Post` is checked via `instanceof` before bare numeric IDs (the numeric-ID branch was unreachable per static analysis).
+- Type-safety casts in settings output and REST pagination headers (`found_posts` / `max_num_pages`).
+
+### Changed
+
+- Docblock type widenings on posts-filter callbacks to match runtime reality (bare IDs are possible via `fields => ids`).
+
+### Notes
+
+- Static-analysis baseline burn-down; npm dev-dependency advisories deferred (dev-only, separate task).
+
 ## [1.2.4] - 2026-08-28
 
 ### Fixed

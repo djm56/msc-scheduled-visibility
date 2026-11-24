@@ -4,7 +4,7 @@ Tags: scheduling,visibility,content,blocks,recurring
 Requires at least: 5.9
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.2.4
+Stable tag: 1.2.5
 License: GPL-2.0+
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -57,6 +57,12 @@ The site timezone set under Settings > General.
 
 == Changelog ==
 
+= 1.2.5 =
+* Fixed: Scheduling guard logic — post-shape handling reordered so `WP_Post` is checked via `instanceof` before bare numeric IDs.
+* Fixed: Type-safety casts in settings output and REST pagination headers (`found_posts` / `max_num_pages`).
+* Changed: Docblock type widenings on posts-filter callbacks to match runtime reality (bare IDs are possible via `fields => ids`).
+* Note: Static-analysis baseline burn-down; npm dev-dependency advisories deferred (dev-only, separate task).
+
 = 1.2.4 =
 * Fixed: Admin styles now load correctly on the Settings page (status badges, tables, and cards were rendering unstyled).
 * Improved: Accessibility — added table header scope attributes, fieldset legends, and ARIA descriptions on the Settings page.
@@ -104,6 +110,9 @@ The site timezone set under Settings > General.
 * Initial release with full scheduling features.
 
 == Upgrade Notice ==
+
+= 1.2.5 =
+Security scan release: scheduling guard cleanup, type-safety casts, and static-analysis baseline burn-down. Recommended update.
 
 = 1.2.4 =
 Fixes unstyled rendering on the Settings page (status badges, tables, and cards) and improves accessibility on that page. Recommended update for all sites.

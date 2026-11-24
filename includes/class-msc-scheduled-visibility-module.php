@@ -487,7 +487,7 @@ class Module {
 					<label><?php esc_html_e( 'Days:', 'msc-scheduled-visibility' ); ?></label><br />
 					<?php foreach ( $day_labels as $num => $label ) : ?>
 						<label style="display:inline-block;margin-right:8px;">
-							<input type="checkbox" name="mscsv_recurring_days[]" value="<?php echo esc_attr( $num ); ?>" <?php checked( in_array( $num, array_map( 'intval', $days ), true ) ); ?> />
+							<input type="checkbox" name="mscsv_recurring_days[]" value="<?php echo esc_attr( (string) (int) $num ); ?>" <?php checked( in_array( $num, array_map( 'intval', $days ), true ) ); ?> />
 							<?php echo esc_html( $label ); ?>
 						</label>
 					<?php endforeach; ?>
@@ -1229,9 +1229,9 @@ class Module {
 	/**
 	 * Filter individual post results for singular queries.
 	 *
-	 * @param array<\WP_Post> $posts Array of post objects.
-	 * @param \WP_Query       $query Query object.
-	 * @return array<\WP_Post>
+	 * @param array<int|string|\WP_Post> $posts Array of post objects or bare IDs.
+	 * @param \WP_Query                  $query Query object.
+	 * @return array<int|string|\WP_Post>
 	 */
 	public function filter_posts_results( $posts, $query ) {
 		if ( ! $this->is_visitor_facing_request() || $this->can_bypass() || ! $query->is_singular ) {
@@ -1251,9 +1251,9 @@ class Module {
 	 * Because this pass rechecks every post live, the query-level exclusion is only an
 	 * optimisation — visibility stays correct even before the status backfill has run.
 	 *
-	 * @param array<\WP_Post> $posts Post objects.
-	 * @param \WP_Query       $query Query object.
-	 * @return array<\WP_Post>
+	 * @param array<int|string|\WP_Post> $posts Post objects or bare IDs.
+	 * @param \WP_Query                  $query Query object.
+	 * @return array<int|string|\WP_Post>
 	 */
 	public function filter_the_posts( $posts, $query ) {
 		if ( ! $this->is_visitor_facing_request() || empty( $posts ) || $this->can_bypass() ) {
@@ -1271,8 +1271,8 @@ class Module {
 	/**
 	 * Remove posts the current visitor may not see.
 	 *
-	 * @param array<\WP_Post> $posts Post objects.
-	 * @return array<\WP_Post>
+	 * @param array<int|string|\WP_Post> $posts Post objects or bare IDs.
+	 * @return array<int|string|\WP_Post>
 	 */
 	private function reject_hidden_posts( $posts ) {
 		$post_types = $this->get_post_types();
@@ -1284,12 +1284,12 @@ class Module {
 			 * block product lists do exactly that — and skipping those would let a
 			 * scheduled-out product through, since nothing narrows the query itself.
 			 */
-			if ( is_numeric( $post ) ) {
-				$post_id   = (int) $post;
-				$post_type = get_post_type( $post_id );
-			} elseif ( isset( $post->ID ) ) {
+			if ( $post instanceof \WP_Post ) {
 				$post_id   = (int) $post->ID;
 				$post_type = $post->post_type;
+			} elseif ( is_numeric( $post ) ) {
+				$post_id   = (int) $post;
+				$post_type = get_post_type( $post_id );
 			} else {
 				continue;
 			}

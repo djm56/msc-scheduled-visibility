@@ -533,7 +533,7 @@ class Settings {
 							</label>
 							<p style="margin-top:8px;">
 								<label for="audit_log_limit"><?php esc_html_e( 'Entries to keep:', 'msc-scheduled-visibility' ); ?></label>
-								<input id="audit_log_limit" type="number" name="audit_log_limit" value="<?php echo esc_attr( $log_limit ); ?>" min="10" max="<?php echo esc_attr( Audit_Log::MAX_ENTRIES ); ?>" step="10" style="width:90px;" />
+								<input id="audit_log_limit" type="number" name="audit_log_limit" value="<?php echo esc_attr( (string) (int) $log_limit ); ?>" min="10" max="<?php echo esc_attr( (string) (int) Audit_Log::MAX_ENTRIES ); ?>" step="10" style="width:90px;" />
 							</p>
 						</td>
 					</tr>
